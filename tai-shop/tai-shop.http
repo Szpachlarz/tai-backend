@@ -1,0 +1,6 @@
+@tai_shop_HostAddress = http://localhost:5125
+
+GET {{tai_shop_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
