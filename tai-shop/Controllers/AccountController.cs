@@ -35,6 +35,8 @@ namespace tai_shop.Controllers
 
             if (!result.Succeeded) return Unauthorized("Email not found and/or password incorrect");
 
+            var roles = await _userManager.GetRolesAsync(user);
+
             return Ok(
                 new NewUserDto
                 {
@@ -42,7 +44,8 @@ namespace tai_shop.Controllers
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Email = user.Email,
-                    Token = _tokenService.CreateToken(user)
+                    Token = _tokenService.CreateToken(user),
+                    Roles = roles
                 }
             );
         }
@@ -70,6 +73,8 @@ namespace tai_shop.Controllers
                     var roleResult = await _userManager.AddToRoleAsync(appUser, "User");
                     if (roleResult.Succeeded)
                     {
+                        var roles = await _userManager.GetRolesAsync(appUser);
+
                         return Ok(
                             new NewUserDto
                             {
@@ -77,7 +82,8 @@ namespace tai_shop.Controllers
                                 FirstName = appUser.FirstName,
                                 LastName = appUser.LastName,
                                 Email = appUser.Email,
-                                Token = _tokenService.CreateToken(appUser)
+                                Token = _tokenService.CreateToken(appUser),
+                                Roles = roles
                             }
                         );
                     }
