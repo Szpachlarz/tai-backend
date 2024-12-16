@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using tai_shop.Data;
 using tai_shop.Interfaces;
 using tai_shop.Models;
+using tai_shop.Repository;
 using tai_shop.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,6 +56,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IItemRepository, ItemRepository>();
 
 var app = builder.Build();
 
