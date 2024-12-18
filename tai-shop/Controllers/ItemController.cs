@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tai_shop.Data;
+using tai_shop.Dtos.Item;
 using tai_shop.Interfaces;
 using tai_shop.Mappers;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace tai_shop.Controllers
 {
@@ -46,6 +46,53 @@ namespace tai_shop.Controllers
             }
 
             return Ok(item.ToItemDto());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateItemRequestDto itemDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var itemModel = itemDto.ToItemFromCreateDto();
+
+            await _itemRepository.CreateAsync(itemModel);
+
+            return CreatedAtAction(nameof(GetById), new { id = itemModel.Id }, itemModel.ToItemDto());
+        }
+
+        [HttpDelete]
+        [Route("{id:int}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var itemModel = await _itemRepository.DeleteAsync(id);
+
+            if (itemModel == null)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+        [HttpPut]
+        [Route("{id:int}")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateItemRequestDto updateDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var itemModel = await _itemRepository.UpdateAsync(id, updateDto);
+
+            if (itemModel == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(itemModel.ToItemDto());
         }
     }
 }

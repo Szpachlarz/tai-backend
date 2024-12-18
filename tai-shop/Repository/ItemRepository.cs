@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using tai_shop.Data;
+using tai_shop.Dtos.Item;
 using tai_shop.Interfaces;
 using tai_shop.Models;
 
@@ -44,9 +45,22 @@ namespace tai_shop.Repository
             return await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
         }
 
-        public Task<Item?> UpdateAsync(int id)
+        public async Task<Item?> UpdateAsync(int id, UpdateItemRequestDto itemDto)
         {
-            throw new NotImplementedException();
+            var existingItem = await _context.Items.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (existingItem == null)
+            {
+                return null;
+            }
+
+            existingItem.Name = itemDto.Name;
+            existingItem.Description = itemDto.Description;
+            existingItem.Price = itemDto.Price;
+
+            await _context.SaveChangesAsync();
+
+            return existingItem;
         }
     }
 }

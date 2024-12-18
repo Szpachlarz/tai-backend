@@ -1,4 +1,5 @@
-﻿using tai_shop.Dtos.Item;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using tai_shop.Dtos.Item;
 using tai_shop.Models;
 
 namespace tai_shop.Mappers
@@ -14,6 +15,16 @@ namespace tai_shop.Mappers
                 Description = itemModel.Description,
                 Price = itemModel.Price,
                 Rating = itemModel.Rating
+            };
+        }
+
+        public static Item ToItemFromCreateDto(this CreateItemRequestDto requestDto)
+        {
+            return new Item
+            {
+                Name = requestDto.Name,
+                Description = requestDto.Description,
+                Price = requestDto.Price,
             };
         }
     }
