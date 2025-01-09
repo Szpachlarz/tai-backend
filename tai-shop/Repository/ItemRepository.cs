@@ -3,6 +3,7 @@ using tai_shop.Data;
 using tai_shop.Dtos.Item;
 using tai_shop.Interfaces;
 using tai_shop.Models;
+using tai_shop.Services;
 
 namespace tai_shop.Repository
 {
@@ -17,6 +18,7 @@ namespace tai_shop.Repository
         public async Task<Item> CreateAsync(Item item)
         {
             await _context.Items.AddAsync(item);
+
             await _context.SaveChangesAsync();
             return item;
         }
@@ -37,12 +39,12 @@ namespace tai_shop.Repository
 
         public async Task<List<Item>> GetAllAsync()
         {
-            return await _context.Items.ToListAsync();
+            return await _context.Items.Include(i => i.Photos).ToListAsync();
         }
 
         public async Task<Item?> GetByIdAsync(int id)
         {
-            return await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
+            return await _context.Items.Include(i => i.Photos).FirstOrDefaultAsync(i => i.Id == id);
         }
 
         public async Task<Item?> UpdateAsync(int id, UpdateItemRequestDto itemDto)

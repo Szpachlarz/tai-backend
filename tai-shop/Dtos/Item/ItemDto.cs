@@ -1,4 +1,5 @@
-﻿using tai_shop.Models;
+﻿using tai_shop.Dtos.Account;
+using tai_shop.Models;
 
 namespace tai_shop.Dtos.Item
 {
@@ -9,6 +10,7 @@ namespace tai_shop.Dtos.Item
         public string Description { get; set; }
         public double Price { get; set; }
         public double Rating { get; set; }
+        public List<PhotoDto> Photos { get; set; }
         //public List<ItemTag> ItemTags { get; set; }
     }
 }

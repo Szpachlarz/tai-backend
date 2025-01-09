@@ -12,6 +12,8 @@
         //Return
         public List<ItemReturn> ItemReturns { get; set; }
         //Tags
-        public List<ItemTag> ItemTags { get; set; } 
+        public List<ItemTag> ItemTags { get; set; }
+        //Photos
+        public List<Photo> Photos { get; set; } = new List<Photo>();
     }
 }

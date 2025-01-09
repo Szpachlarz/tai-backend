@@ -3,6 +3,8 @@ using tai_shop.Data;
 using tai_shop.Dtos.Item;
 using tai_shop.Interfaces;
 using tai_shop.Mappers;
+using tai_shop.Models;
+using tai_shop.Services;
 
 namespace tai_shop.Controllers
 {
@@ -11,12 +13,14 @@ namespace tai_shop.Controllers
     public class ItemController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly IItemRepository _itemRepository; 
+        private readonly IItemRepository _itemRepository;
+        private readonly IPhotoService _photoService;
 
-        public ItemController(ApplicationDbContext context, IItemRepository itemRepository)
+        public ItemController(ApplicationDbContext context, IItemRepository itemRepository, IPhotoService photoService)
         {
             _context = context;
             _itemRepository = itemRepository;
+            _photoService = photoService;
         }
 
         [HttpGet]
@@ -49,7 +53,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateItemRequestDto itemDto)
+        public async Task<IActionResult> Create([FromForm] CreateItemRequestDto itemDto, [FromForm] IEnumerable<IFormFile> files)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -57,6 +61,12 @@ namespace tai_shop.Controllers
             var itemModel = itemDto.ToItemFromCreateDto();
 
             await _itemRepository.CreateAsync(itemModel);
+
+            if (files != null && files.Any())
+            {
+                var photos = await _photoService.Upload(itemModel, files);
+                itemModel.Photos.AddRange(photos);
+            }
 
             return CreatedAtAction(nameof(GetById), new { id = itemModel.Id }, itemModel.ToItemDto());
         }
@@ -80,10 +90,28 @@ namespace tai_shop.Controllers
 
         [HttpPut]
         [Route("{id:int}")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateItemRequestDto updateDto)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromForm] UpdateItemRequestDto updateDto, [FromForm] IEnumerable<IFormFile> photos, [FromForm] List<int> photosToDelete)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var item = await _itemRepository.GetByIdAsync(id);
+
+            if (photosToDelete != null && photosToDelete.Any())
+            {
+                var photosToRemove = item.Photos.Where(p => photosToDelete.Contains(p.Id)).ToList();
+                foreach (var photo in photosToRemove)
+                {
+                    _photoService.Delete(photo.Filename);
+                    item.Photos.Remove(photo);
+                }
+            }
+
+            if (photos != null && photos.Any())
+            {
+                var uploadedPhotos = await _photoService.Upload(item, photos);
+                item.Photos.AddRange(uploadedPhotos);
+            }
 
             var itemModel = await _itemRepository.UpdateAsync(id, updateDto);
 

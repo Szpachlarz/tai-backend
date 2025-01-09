@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 using tai_shop.Models;
 
 namespace tai_shop.Data
@@ -22,6 +21,7 @@ namespace tai_shop.Data
         public ItemOrder ItemOrders { get; set; }
         public ItemReturn ItemReturns { get; set; }
         public ItemTag ItemTags { get; set; }
+        public Photo Photos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
