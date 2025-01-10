@@ -51,13 +51,13 @@ namespace tai_shop.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "b64d043a-4072-4b2f-9b06-da3757047948",
+                            Id = "1235c298-210b-45af-82e3-0db98befa1f7",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "52be9a59-7058-4137-8e3a-9b2e1281394c",
+                            Id = "c7b06928-bb0c-410f-b59a-4d69851b97ed",
                             Name = "User",
                             NormalizedName = "USER"
                         });

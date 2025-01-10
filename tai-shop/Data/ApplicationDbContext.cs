@@ -57,7 +57,5 @@ namespace tai_shop.Data
             };
             builder.Entity<IdentityRole>().HasData(roles);
         }
-
-
     }
 }
