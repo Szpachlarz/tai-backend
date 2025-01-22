@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using tai_shop.Dtos.Account;
+﻿using tai_shop.Dtos.Account;
 using tai_shop.Dtos.Item;
 using tai_shop.Models;
 
@@ -15,7 +14,7 @@ namespace tai_shop.Mappers
                 Name = itemModel.Name,
                 Description = itemModel.Description,
                 Price = itemModel.Price,
-                Rating = itemModel.Rating,
+                Rating = itemModel.AverageRating,
                 Photos = itemModel.Photos?.Select(p => new PhotoDto
                 {
                     Id = p.Id,
