@@ -51,7 +51,7 @@ namespace tai_shop.Repository
             return await _context.Tags.FirstOrDefaultAsync(o => o.Id == tagId);
         }
 
-        public async Task<Tag?> UpdateTagAsync(int tagId, Tag tag)
+        public async Task<Tag?> UpdateTagAsync(int tagId, TagDto tagDto)
         {
             var existingTag = await _context.Tags.FirstOrDefaultAsync(x => x.Id == tagId);
 
@@ -60,7 +60,7 @@ namespace tai_shop.Repository
                 return null;
             }
 
-            existingTag.Name = tag.Name;
+            existingTag.Name = tagDto.Name;
 
             await _context.SaveChangesAsync();
 
@@ -95,7 +95,7 @@ namespace tai_shop.Repository
                 .ToListAsync();
         }
 
-        public async Task RemoveTagFromProductAsync(int itemId, int tagId)
+        public async Task RemoveTagFromItemAsync(int itemId, int tagId)
         {
             var itemTag = await _context.ItemTags
                 .FirstOrDefaultAsync(pt => pt.ItemId == itemId && pt.TagId == tagId);
