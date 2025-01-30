@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 using tai_shop.Models;
 
 namespace tai_shop.Data
@@ -41,6 +42,14 @@ namespace tai_shop.Data
                 .HasOne(b => b.Tag)
                 .WithMany(ba => ba.ItemTags)
                 .HasForeignKey(bi => bi.TagId);
+
+            builder.Entity<Order>()
+                .Property(o => o.Status)
+                .HasConversion<string>();
+
+            builder.Entity<Order>()
+                .Property(o => o.ShippingMethod)
+                .HasConversion<string>();
 
             List<IdentityRole> roles = new List<IdentityRole>
             {

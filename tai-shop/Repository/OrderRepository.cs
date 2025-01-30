@@ -44,18 +44,19 @@ namespace tai_shop.Repository
             return order;
         }
 
-        //public async Task<Order?> UpdateOrderAsync(int orderId, Order order)
-        //{
-        //    var existingOrder = await _context.Items.FirstOrDefaultAsync(x => x.Id == orderId);
+        public async Task<Order?> UpdateOrderAsync(int orderId, Order order)
+        {
+            var existingOrder = await _context.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
 
-        //    if (existingOrder == null)
-        //    {
-        //        return null;
-        //    }
+            if (existingOrder == null)
+            {
+                return null;
+            }
 
-        //    existingOrder
-        //    await _context.Orders.Update(order);
-        //}
+            existingOrder.ItemOrders = order.ItemOrders;
+            await _context.SaveChangesAsync();
+            return existingOrder;
+        }
 
         public async Task<Order?> DeleteOrderAsync(int orderId)
         {
