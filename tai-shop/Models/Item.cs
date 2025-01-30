@@ -6,6 +6,7 @@
         public string Name { get; set; }
         public string Description { get; set; }
         public double Price { get; set; }
+        public double Rating { get; set; }
         //Orders
         public List<ItemOrder> ItemOrders { get; set; }
         //Return
@@ -14,9 +15,5 @@
         public List<ItemTag> ItemTags { get; set; }
         //Photos
         public List<Photo> Photos { get; set; } = new List<Photo>();
-        public List<Review> Reviews { get; set; }
-        public double AverageRating => Reviews?.Any() == true
-            ? Reviews.Average(r => r.Rating)
-            : 0;
     }
 }

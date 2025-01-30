@@ -51,13 +51,13 @@ namespace tai_shop.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "d0ef7870-c8be-4850-9756-31632eb73000",
+                            Id = "1235c298-210b-45af-82e3-0db98befa1f7",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "56a274f7-be57-4528-aed4-2f63a2c7469f",
+                            Id = "c7b06928-bb0c-410f-b59a-4d69851b97ed",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -261,6 +261,9 @@ namespace tai_shop.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
+                    b.Property<double>("Rating")
+                        .HasColumnType("float");
+
                     b.HasKey("Id");
 
                     b.ToTable("Items");
@@ -295,7 +298,7 @@ namespace tai_shop.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("ItemOrders");
+                    b.ToTable("ItemOrder");
                 });
 
             modelBuilder.Entity("tai_shop.Models.ItemReturn", b =>
@@ -324,7 +327,7 @@ namespace tai_shop.Migrations
 
                     b.HasIndex("ReturnId");
 
-                    b.ToTable("ItemReturns");
+                    b.ToTable("ItemReturn");
                 });
 
             modelBuilder.Entity("tai_shop.Models.ItemTag", b =>
@@ -347,7 +350,7 @@ namespace tai_shop.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("ItemTags");
+                    b.ToTable("ItemTag");
                 });
 
             modelBuilder.Entity("tai_shop.Models.Order", b =>
@@ -395,7 +398,7 @@ namespace tai_shop.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("Photos");
+                    b.ToTable("Photo");
                 });
 
             modelBuilder.Entity("tai_shop.Models.Return", b =>
@@ -415,40 +418,6 @@ namespace tai_shop.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Returns");
-                });
-
-            modelBuilder.Entity("tai_shop.Models.Review", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ItemId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ItemId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("tai_shop.Models.Tag", b =>
@@ -609,25 +578,6 @@ namespace tai_shop.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("tai_shop.Models.Review", b =>
-                {
-                    b.HasOne("tai_shop.Models.Item", "Item")
-                        .WithMany("Reviews")
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("tai_shop.Models.AppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Item");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("tai_shop.Models.Item", b =>
                 {
                     b.Navigation("ItemOrders");
@@ -637,8 +587,6 @@ namespace tai_shop.Migrations
                     b.Navigation("ItemTags");
 
                     b.Navigation("Photos");
-
-                    b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("tai_shop.Models.Order", b =>

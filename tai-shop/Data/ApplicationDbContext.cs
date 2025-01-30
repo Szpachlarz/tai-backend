@@ -7,7 +7,7 @@ namespace tai_shop.Data
 {
     public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
-        public ApplicationDbContext(DbContextOptions dbContextOptions)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> dbContextOptions)
         : base(dbContextOptions)
         {
 
@@ -17,11 +17,11 @@ namespace tai_shop.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<Return> Returns { get; set; }
         public DbSet<Tag> Tags { get; set; }
-        public DbSet<Review> Reviews { get; set; }
-        public DbSet<ItemOrder> ItemOrders { get; set; }
-        public DbSet<ItemReturn> ItemReturns { get; set; }
-        public DbSet<ItemTag> ItemTags { get; set; }
-        public DbSet<Photo> Photos { get; set; }
+        public Review Reviews { get; set; }
+        public ItemOrder ItemOrders { get; set; }
+        public ItemReturn ItemReturns { get; set; }
+        public ItemTag ItemTags { get; set; }
+        public Photo Photos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

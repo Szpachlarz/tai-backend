@@ -44,7 +44,7 @@ namespace tai_shop.Controllers
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Email = user.Email,
-                    Token = await _tokenService.CreateToken(user),
+                    Token = _tokenService.CreateToken(user),
                     Roles = roles
                 }
             );
@@ -82,7 +82,7 @@ namespace tai_shop.Controllers
                                 FirstName = appUser.FirstName,
                                 LastName = appUser.LastName,
                                 Email = appUser.Email,
-                                Token = await _tokenService.CreateToken(appUser),
+                                Token = _tokenService.CreateToken(appUser),
                                 Roles = roles
                             }
                         );

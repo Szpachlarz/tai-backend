@@ -4,6 +4,6 @@ namespace tai_shop.Interfaces
 {
     public interface ITokenService
     {
-        Task<string> CreateToken(AppUser user);
+        string CreateToken(AppUser user);
     }
 }
