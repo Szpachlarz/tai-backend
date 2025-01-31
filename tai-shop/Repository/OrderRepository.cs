@@ -19,6 +19,7 @@ namespace tai_shop.Repository
         {
             return await _context.Orders
                 .Include(o => o.ItemOrders)
+                .ThenInclude(io => io.Item)
                 .FirstOrDefaultAsync(o => o.Id == orderId);
         }
 
@@ -26,6 +27,7 @@ namespace tai_shop.Repository
         {
             return await _context.Orders
                 .Include(o => o.ItemOrders)
+                .ThenInclude(io => io.Item)
                 .ToListAsync();
         }
 
@@ -33,12 +35,19 @@ namespace tai_shop.Repository
         {
             return await _context.Orders
                 .Include(o => o.ItemOrders)
+                .ThenInclude(io => io.Item)
                 .Where(o => o.UserId == customerId)
                 .ToListAsync();
         }
 
         public async Task<Order> AddOrderAsync(Order order)
         {
+            foreach (var itemOrder in order.ItemOrders)
+            {
+                var item = await _context.Items.FindAsync(itemOrder.ItemId);
+                itemOrder.Price = item.Price;
+            }
+
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
             return order;

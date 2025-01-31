@@ -47,6 +47,13 @@ namespace tai_shop.Repository
             return await _context.Items.Include(i => i.Photos).FirstOrDefaultAsync(i => i.Id == id);
         }
 
+        public async Task<IEnumerable<Item>> GetItemsByIdsAsync(IEnumerable<int> itemIds)
+        {
+            return await _context.Items
+                .Where(i => itemIds.Contains(i.Id))
+                .ToListAsync();
+        }
+
         public async Task<Item?> UpdateAsync(int id, UpdateItemRequestDto itemDto)
         {
             var existingItem = await _context.Items.FirstOrDefaultAsync(x => x.Id == id);

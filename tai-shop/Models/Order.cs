@@ -12,8 +12,9 @@ namespace tai_shop.Models
         public DateTime OrderDate { get; set; }
         public OrderStatus Status { get; set; }
         public ShippingMethod ShippingMethod { get; set; }
-        public decimal TotalAmount { get; set; }
         //Items
         public List<ItemOrder> ItemOrders { get; set; }
+        public decimal TotalAmount =>
+        ItemOrders?.Sum(io => io.Quantity * io.Price) ?? 0;
     }
 }
