@@ -6,6 +6,7 @@ using System.Security.Claims;
 using tai_shop.Dtos;
 using tai_shop.Interfaces;
 using tai_shop.Models;
+using tai_shop.Repository;
 
 namespace tai_shop.Controllers
 {
@@ -19,6 +20,17 @@ namespace tai_shop.Controllers
         {
             _reviewRepository = reviewRepository;
             _userManager = userManager;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var reviews = await _reviewRepository.GetAllAsync();
+
+            return Ok(reviews);
         }
 
         [HttpPost]

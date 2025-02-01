@@ -14,6 +14,11 @@ namespace tai_shop.Repository
             _context = context;
         }
 
+        public async Task<List<Review>> GetAllAsync()
+        {
+            return await _context.Reviews.ToListAsync();
+        }
+
         public async Task<Review> CreateReviewAsync(string userId, ReviewDto reviewDto)
         {
             var existingReview = await _context.Reviews
