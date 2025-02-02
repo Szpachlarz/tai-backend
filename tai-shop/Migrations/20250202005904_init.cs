@@ -55,6 +55,22 @@ namespace tai_shop.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Carts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastUpdated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Carts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Items",
                 columns: table => new
                 {
@@ -62,8 +78,9 @@ namespace tai_shop.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<double>(type: "float", nullable: false),
-                    Rating = table.Column<double>(type: "float", nullable: false)
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    OldPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    StockQuantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -195,7 +212,10 @@ namespace tai_shop.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ShippingMethod = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -228,7 +248,36 @@ namespace tai_shop.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Photo",
+                name: "CartItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CartId = table.Column<int>(type: "int", nullable: false),
+                    ItemId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CartItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CartItems_Carts_CartId",
+                        column: x => x.CartId,
+                        principalTable: "Carts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CartItems_Items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Items",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Photos",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -240,9 +289,9 @@ namespace tai_shop.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Photo", x => x.Id);
+                    table.PrimaryKey("PK_Photos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Photo_Items_ItemId",
+                        name: "FK_Photos_Items_ItemId",
                         column: x => x.ItemId,
                         principalTable: "Items",
                         principalColumn: "Id",
@@ -250,7 +299,36 @@ namespace tai_shop.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItemTag",
+                name: "Reviews",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ItemId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reviews", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Reviews_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Reviews_Items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Items",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItemTags",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -260,15 +338,15 @@ namespace tai_shop.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ItemTag", x => x.Id);
+                    table.PrimaryKey("PK_ItemTags", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ItemTag_Items_ItemId",
+                        name: "FK_ItemTags_Items_ItemId",
                         column: x => x.ItemId,
                         principalTable: "Items",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ItemTag_Tags_TagId",
+                        name: "FK_ItemTags_Tags_TagId",
                         column: x => x.TagId,
                         principalTable: "Tags",
                         principalColumn: "Id",
@@ -276,28 +354,28 @@ namespace tai_shop.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItemOrder",
+                name: "ItemOrders",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Quantity = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<double>(type: "float", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     ItemId = table.Column<int>(type: "int", nullable: false),
                     OrderId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ItemOrder", x => x.Id);
+                    table.PrimaryKey("PK_ItemOrders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ItemOrder_Items_ItemId",
+                        name: "FK_ItemOrders_Items_ItemId",
                         column: x => x.ItemId,
                         principalTable: "Items",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ItemOrder_Orders_OrderId",
+                        name: "FK_ItemOrders_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "Id",
@@ -305,7 +383,7 @@ namespace tai_shop.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItemReturn",
+                name: "ItemReturns",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -317,15 +395,15 @@ namespace tai_shop.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ItemReturn", x => x.Id);
+                    table.PrimaryKey("PK_ItemReturns", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ItemReturn_Items_ItemId",
+                        name: "FK_ItemReturns_Items_ItemId",
                         column: x => x.ItemId,
                         principalTable: "Items",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ItemReturn_Returns_ReturnId",
+                        name: "FK_ItemReturns_Returns_ReturnId",
                         column: x => x.ReturnId,
                         principalTable: "Returns",
                         principalColumn: "Id",
@@ -337,8 +415,8 @@ namespace tai_shop.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "1235c298-210b-45af-82e3-0db98befa1f7", null, "Admin", "ADMIN" },
-                    { "c7b06928-bb0c-410f-b59a-4d69851b97ed", null, "User", "USER" }
+                    { "69fb5617-62ec-47f7-b624-cf07a36b4ade", null, "Admin", "ADMIN" },
+                    { "cc5dc002-8e12-4b57-8da0-432d1f3b32dd", null, "User", "USER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -381,33 +459,43 @@ namespace tai_shop.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemOrder_ItemId",
-                table: "ItemOrder",
+                name: "IX_CartItems_CartId",
+                table: "CartItems",
+                column: "CartId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CartItems_ItemId",
+                table: "CartItems",
                 column: "ItemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemOrder_OrderId",
-                table: "ItemOrder",
+                name: "IX_ItemOrders_ItemId",
+                table: "ItemOrders",
+                column: "ItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemOrders_OrderId",
+                table: "ItemOrders",
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemReturn_ItemId",
-                table: "ItemReturn",
+                name: "IX_ItemReturns_ItemId",
+                table: "ItemReturns",
                 column: "ItemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemReturn_ReturnId",
-                table: "ItemReturn",
+                name: "IX_ItemReturns_ReturnId",
+                table: "ItemReturns",
                 column: "ReturnId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemTag_ItemId",
-                table: "ItemTag",
+                name: "IX_ItemTags_ItemId",
+                table: "ItemTags",
                 column: "ItemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemTag_TagId",
-                table: "ItemTag",
+                name: "IX_ItemTags_TagId",
+                table: "ItemTags",
                 column: "TagId");
 
             migrationBuilder.CreateIndex(
@@ -416,13 +504,23 @@ namespace tai_shop.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Photo_ItemId",
-                table: "Photo",
+                name: "IX_Photos_ItemId",
+                table: "Photos",
                 column: "ItemId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Returns_UserId",
                 table: "Returns",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_ItemId",
+                table: "Reviews",
+                column: "ItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_UserId",
+                table: "Reviews",
                 column: "UserId");
         }
 
@@ -445,19 +543,28 @@ namespace tai_shop.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "ItemOrder");
+                name: "CartItems");
 
             migrationBuilder.DropTable(
-                name: "ItemReturn");
+                name: "ItemOrders");
 
             migrationBuilder.DropTable(
-                name: "ItemTag");
+                name: "ItemReturns");
 
             migrationBuilder.DropTable(
-                name: "Photo");
+                name: "ItemTags");
+
+            migrationBuilder.DropTable(
+                name: "Photos");
+
+            migrationBuilder.DropTable(
+                name: "Reviews");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Carts");
 
             migrationBuilder.DropTable(
                 name: "Orders");

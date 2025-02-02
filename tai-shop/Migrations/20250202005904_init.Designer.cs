@@ -12,7 +12,7 @@ using tai_shop.Data;
 namespace tai_shop.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250110170956_init")]
+    [Migration("20250202005904_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -54,13 +54,13 @@ namespace tai_shop.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1235c298-210b-45af-82e3-0db98befa1f7",
+                            Id = "69fb5617-62ec-47f7-b624-cf07a36b4ade",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "c7b06928-bb0c-410f-b59a-4d69851b97ed",
+                            Id = "cc5dc002-8e12-4b57-8da0-432d1f3b32dd",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -245,6 +245,65 @@ namespace tai_shop.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("tai_shop.Models.Cart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("tai_shop.Models.CartItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("CartItems");
+                });
+
             modelBuilder.Entity("tai_shop.Models.Item", b =>
                 {
                     b.Property<int>("Id")
@@ -261,11 +320,14 @@ namespace tai_shop.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
+                    b.Property<decimal?>("OldPrice")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("Rating")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("StockQuantity")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -286,8 +348,8 @@ namespace tai_shop.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -301,7 +363,7 @@ namespace tai_shop.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("ItemOrder");
+                    b.ToTable("ItemOrders");
                 });
 
             modelBuilder.Entity("tai_shop.Models.ItemReturn", b =>
@@ -330,7 +392,7 @@ namespace tai_shop.Migrations
 
                     b.HasIndex("ReturnId");
 
-                    b.ToTable("ItemReturn");
+                    b.ToTable("ItemReturns");
                 });
 
             modelBuilder.Entity("tai_shop.Models.ItemTag", b =>
@@ -353,7 +415,7 @@ namespace tai_shop.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("ItemTag");
+                    b.ToTable("ItemTags");
                 });
 
             modelBuilder.Entity("tai_shop.Models.Order", b =>
@@ -363,6 +425,17 @@ namespace tai_shop.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ShippingMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -401,7 +474,7 @@ namespace tai_shop.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("Photo");
+                    b.ToTable("Photos");
                 });
 
             modelBuilder.Entity("tai_shop.Models.Return", b =>
@@ -421,6 +494,40 @@ namespace tai_shop.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Returns");
+                });
+
+            modelBuilder.Entity("tai_shop.Models.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("tai_shop.Models.Tag", b =>
@@ -489,6 +596,25 @@ namespace tai_shop.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("tai_shop.Models.CartItem", b =>
+                {
+                    b.HasOne("tai_shop.Models.Cart", "Cart")
+                        .WithMany("Items")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("tai_shop.Models.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("tai_shop.Models.ItemOrder", b =>
@@ -581,6 +707,30 @@ namespace tai_shop.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("tai_shop.Models.Review", b =>
+                {
+                    b.HasOne("tai_shop.Models.Item", "Item")
+                        .WithMany("Reviews")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("tai_shop.Models.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("tai_shop.Models.Cart", b =>
+                {
+                    b.Navigation("Items");
+                });
+
             modelBuilder.Entity("tai_shop.Models.Item", b =>
                 {
                     b.Navigation("ItemOrders");
@@ -590,6 +740,8 @@ namespace tai_shop.Migrations
                     b.Navigation("ItemTags");
 
                     b.Navigation("Photos");
+
+                    b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("tai_shop.Models.Order", b =>

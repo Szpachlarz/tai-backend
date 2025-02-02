@@ -23,6 +23,8 @@ namespace tai_shop.Data
         public DbSet<ItemReturn> ItemReturns { get; set; }
         public DbSet<ItemTag> ItemTags { get; set; }
         public DbSet<Photo> Photos { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -49,6 +51,10 @@ namespace tai_shop.Data
 
             builder.Entity<Order>()
                 .Property(o => o.ShippingMethod)
+                .HasConversion<string>();
+
+            builder.Entity<Cart>()
+                .Property(o => o.Status)
                 .HasConversion<string>();
 
             List<IdentityRole> roles = new List<IdentityRole>

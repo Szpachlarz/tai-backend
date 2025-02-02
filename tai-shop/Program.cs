@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using tai_shop.Data;
 using tai_shop.Interfaces;
+using tai_shop.Middleware;
 using tai_shop.Models;
 using tai_shop.Repository;
 using tai_shop.Services;
@@ -117,12 +118,14 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -147,6 +150,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.MapControllers();
 
