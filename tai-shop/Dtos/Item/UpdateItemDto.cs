@@ -2,7 +2,7 @@
 
 namespace tai_shop.Dtos.Item
 {
-    public class CreateItemRequestDto
+    public class UpdateItemDto
     {
         [Required]
         public string Name { get; set; }
@@ -10,5 +10,7 @@ namespace tai_shop.Dtos.Item
         public string Description { get; set; }
         [Required]
         public decimal Price { get; set; }
+        public IEnumerable<IFormFile> Photos { get; set; }
+        public List<int> PhotosToDelete { get; set; }
     }
 }

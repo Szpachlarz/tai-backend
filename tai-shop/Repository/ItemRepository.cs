@@ -54,7 +54,7 @@ namespace tai_shop.Repository
                 .ToListAsync();
         }
 
-        public async Task<Item?> UpdateAsync(int id, UpdateItemRequestDto itemDto)
+        public async Task<Item?> UpdateAsync(int id, UpdateItemDto itemDto)
         {
             var existingItem = await _context.Items.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -66,6 +66,22 @@ namespace tai_shop.Repository
             existingItem.Name = itemDto.Name;
             existingItem.Description = itemDto.Description;
             existingItem.Price = itemDto.Price;
+
+            await _context.SaveChangesAsync();
+
+            return existingItem;
+        }
+
+        public async Task<Item?> UpdateStockQuantityAsync(int id, UpdateStockQuantityDto itemDto)
+        {
+            var existingItem = await _context.Items.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (existingItem == null)
+            {
+                return null;
+            }
+
+            existingItem.StockQuantity = itemDto.StockQuantity;
 
             await _context.SaveChangesAsync();
 

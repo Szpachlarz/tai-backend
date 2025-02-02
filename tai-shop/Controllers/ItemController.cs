@@ -53,7 +53,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] CreateItemRequestDto itemDto, [FromForm] IEnumerable<IFormFile> files)
+        public async Task<IActionResult> Create([FromForm] CreateItemDto itemDto, [FromForm] IEnumerable<IFormFile> files)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -90,7 +90,7 @@ namespace tai_shop.Controllers
 
         [HttpPut]
         [Route("{id:int}")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromForm] UpdateItemRequestDto updateDto, [FromForm] IEnumerable<IFormFile> photos, [FromForm] List<int> photosToDelete)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromForm] UpdateItemDto updateDto, [FromForm] IEnumerable<IFormFile> photos, [FromForm] List<int> photosToDelete)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -121,6 +121,22 @@ namespace tai_shop.Controllers
             }
 
             return Ok(itemModel.ToItemDto());
+        }
+
+        [HttpPatch]
+        [Route("{id:int}")]
+        public async Task<IActionResult> UpdateStockQuantity([FromRoute]int id, [FromBody] UpdateStockQuantityDto updateStockDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var item = await _itemRepository.UpdateStockQuantityAsync(id, updateStockDto);
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(item);
         }
     }
 }

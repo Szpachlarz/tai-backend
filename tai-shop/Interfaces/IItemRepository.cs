@@ -9,7 +9,8 @@ namespace tai_shop.Interfaces
         Task<Item?> GetByIdAsync(int id);
         Task<IEnumerable<Item>> GetItemsByIdsAsync(IEnumerable<int> itemIds);
         Task<Item> CreateAsync(Item item);
-        Task<Item?> UpdateAsync(int id, UpdateItemRequestDto itemDto);
+        Task<Item?> UpdateAsync(int id, UpdateItemDto itemDto);
         Task<Item?> DeleteAsync(int id);
+        Task<Item?> UpdateStockQuantityAsync(int id, UpdateStockQuantityDto itemDto);
     }
 }

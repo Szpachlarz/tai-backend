@@ -25,7 +25,7 @@ namespace tai_shop.Mappers
             };
         }
 
-        public static Item ToItemFromCreateDto(this CreateItemRequestDto requestDto)
+        public static Item ToItemFromCreateDto(this CreateItemDto requestDto)
         {
             return new Item
             {
