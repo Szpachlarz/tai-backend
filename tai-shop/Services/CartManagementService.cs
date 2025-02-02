@@ -12,8 +12,7 @@ namespace tai_shop.Services
         private readonly ApplicationDbContext _context;
         private readonly TimeSpan _cleanupThreshold = TimeSpan.FromDays(30);
 
-        public CartManagementService(
-            ApplicationDbContext context)
+        public CartManagementService(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -62,13 +61,13 @@ namespace tai_shop.Services
 
         private async Task ValidateInventory(Cart cart)
         {
-            foreach (var item in cart.CartItems)
+            foreach (var cartItem in cart.CartItems)
             {
-                var product = await _context.Items.FindAsync(item.Id);
-                if (product == null || product.StockQuantity < item.Quantity)
+                var product = await _context.Items.FindAsync(cartItem.ItemId);
+                if (product == null || product.StockQuantity < cartItem.Quantity)
                 {
                     throw new InvalidOperationException(
-                        $"Insufficient inventory for product {item.Id}");
+                        $"Insufficient inventory for product {cartItem.Item.Name}");
                 }
             }
         }

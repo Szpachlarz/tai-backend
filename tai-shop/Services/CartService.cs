@@ -12,16 +12,13 @@ namespace tai_shop.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ILogger<CartService> _logger;
 
         public CartService(
             ApplicationDbContext context,
-            IHttpContextAccessor httpContextAccessor,
-            ILogger<CartService> logger)
+            IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
-            _logger = logger;
         }
 
         private string GetOrCreateCartId(HttpContext httpContext)
@@ -111,14 +108,10 @@ namespace tai_shop.Services
             }
             catch (DbUpdateException ex)
             {
-                var innerException = ex.InnerException?.Message; // Get inner exception details
-                Console.WriteLine($"Database Error: {innerException}"); // Log to console
-                throw; // Re-throw to see the full stack trace
+                var innerException = ex.InnerException?.Message;
+                Console.WriteLine($"Database Error: {innerException}");
+                throw;
             }
-
-            _logger.LogInformation(
-                "Added {Quantity} of item {ItemId} to cart for user {UserId}",
-                quantity, itemId, cart.UserId);
         }
 
         public async Task UpdateQuantityAsync(int itemId, int quantity)
@@ -148,10 +141,6 @@ namespace tai_shop.Services
 
             cart.LastUpdated = DateTime.UtcNow;
             await _context.SaveChangesAsync();
-
-            _logger.LogInformation(
-                "Updated quantity to {Quantity} for item {ItemId} in cart for user {UserId}",
-                quantity, itemId, cart.UserId);
         }
 
         public async Task RemoveItemAsync(int itemId)
@@ -163,10 +152,6 @@ namespace tai_shop.Services
             cart.CartItems.Remove(cartItem);
             cart.LastUpdated = DateTime.UtcNow;
             await _context.SaveChangesAsync();
-
-            _logger.LogInformation(
-                "Removed item {ItemId} from cart for user {UserId}",
-                itemId, cart.UserId);
         }
 
         public async Task ClearCartAsync()
@@ -175,8 +160,6 @@ namespace tai_shop.Services
             cart.CartItems.Clear();
             cart.LastUpdated = DateTime.UtcNow;
             await _context.SaveChangesAsync();
-
-            _logger.LogInformation("Cleared cart for user {UserId}", cart.UserId);
         }
 
         public async Task<decimal> GetCartTotalAsync()

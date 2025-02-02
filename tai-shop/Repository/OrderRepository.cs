@@ -40,12 +40,26 @@ namespace tai_shop.Repository
                 .ToListAsync();
         }
 
-        public async Task<Order> AddOrderAsync(Order order)
+        public async Task<Order> AddOrderAsync(Cart cart)
         {
-            foreach (var itemOrder in order.ItemOrders)
+            var order = new Order
             {
-                var item = await _context.Items.FindAsync(itemOrder.ItemId);
-                itemOrder.Price = item.Price;
+                OrderDate = DateTime.UtcNow,
+                ItemOrders = cart.CartItems.Select(ci => new ItemOrder
+                {
+                    ItemId = ci.ItemId,
+                    Quantity = ci.Quantity,
+                    Price = ci.UnitPrice
+                }).ToList()
+            };
+
+            if (cart.UserId?.StartsWith("anon_") != true)
+            {
+                order.UserId = cart.UserId;
+            }
+            else
+            {
+                order.AnonymousUserId = cart.UserId;
             }
 
             await _context.Orders.AddAsync(order);

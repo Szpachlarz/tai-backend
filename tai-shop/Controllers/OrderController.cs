@@ -7,6 +7,7 @@ using tai_shop.Enums;
 using tai_shop.Interfaces;
 using tai_shop.Mappers;
 using tai_shop.Models;
+using tai_shop.Services;
 
 namespace tai_shop.Controllers
 {
@@ -15,12 +16,14 @@ namespace tai_shop.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly IItemRepository _itemRepository;
+        private readonly ICartService _cartService;
+        private readonly CartManagementService _cartManagement;
 
-        public OrderController(IOrderRepository orderRepository, IItemRepository itemRepository)
+        public OrderController(IOrderRepository orderRepository, ICartService cartService, CartManagementService cartManagement)
         {
             _orderRepository = orderRepository;
-            _itemRepository = itemRepository;
+            _cartService = cartService;
+            _cartManagement = cartManagement;
         }
 
         [HttpGet]
@@ -53,17 +56,19 @@ namespace tai_shop.Controllers
         }
 
         [HttpPost]
-        [Authorize]
-        public async Task<ActionResult<OrderDto>> CreateOrder(CreateOrderDto createOrderDto)
+        public async Task<ActionResult<OrderDto>> CreateOrder()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var cart = await _cartService.GetCartAsync();
+            if (!cart.CartItems.Any())
+                throw new InvalidOperationException("Cart is empty");
 
-            var itemIds = createOrderDto.Items.Select(i => i.ItemId);
-            var items = await _itemRepository.GetItemsByIdsAsync(itemIds);
-            var order = createOrderDto.ToEntity(userId, items);
-            var createdOrder = await _orderRepository.AddOrderAsync(order);
+            await _cartManagement.TransitionToCheckout(cart.Id);
+
+            var createdOrder = await _orderRepository.AddOrderAsync(cart);
+
+            await _cartManagement.CompleteCart(cart.Id);
+
             var orderDto = createdOrder.ToDto();
-
             return CreatedAtAction(
                 nameof(GetOrder),
                 new { id = orderDto.Id },

@@ -119,6 +119,8 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<CartManagementService>();
+builder.Services.AddScoped<CartCleanupService>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
