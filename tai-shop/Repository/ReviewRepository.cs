@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using tai_shop.Data;
-using tai_shop.Dtos;
+using tai_shop.Dtos.Review;
 using tai_shop.Interfaces;
 using tai_shop.Models;
 
@@ -16,10 +16,10 @@ namespace tai_shop.Repository
 
         public async Task<List<Review>> GetAllAsync()
         {
-            return await _context.Reviews.ToListAsync();
+            return await _context.Reviews.Include(r => r.User).ToListAsync();
         }
 
-        public async Task<Review> CreateReviewAsync(string userId, ReviewDto reviewDto)
+        public async Task<Review> CreateReviewAsync(string userId, CreateReviewDto reviewDto)
         {
             var existingReview = await _context.Reviews
                 .FirstOrDefaultAsync(r => r.ItemId == reviewDto.ItemId && r.UserId == userId);
@@ -54,9 +54,12 @@ namespace tai_shop.Repository
 
         public async Task<double> GetProductAverageRatingAsync(int productId)
         {
-            return await _context.Reviews
+            var ratings = await _context.Reviews
                 .Where(r => r.ItemId == productId)
-                .AverageAsync(r => r.Rating);
+                .Select(r => r.Rating)
+                .ToListAsync();
+
+            return ratings.Any() ? ratings.Average() : 0.0;
         }
     }
 }

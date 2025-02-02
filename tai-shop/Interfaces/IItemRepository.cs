@@ -12,5 +12,6 @@ namespace tai_shop.Interfaces
         Task<Item?> UpdateAsync(int id, UpdateItemDto itemDto);
         Task<Item?> DeleteAsync(int id);
         Task<Item?> UpdateStockQuantityAsync(int id, UpdateStockQuantityDto itemDto);
+        Task<bool> ItemExistsAsync(int itemId);
     }
 }

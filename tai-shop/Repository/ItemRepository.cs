@@ -87,5 +87,10 @@ namespace tai_shop.Repository
 
             return existingItem;
         }
+
+        public async Task<bool> ItemExistsAsync(int itemId)
+        {
+            return await _context.Items.AnyAsync(i => i.Id == itemId);
+        }
     }
 }
