@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using tai_shop.Dtos;
 using tai_shop.Dtos.Order;
 using tai_shop.Enums;
 using tai_shop.Interfaces;
@@ -56,7 +57,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<OrderDto>> CreateOrder()
+        public async Task<ActionResult<OrderDto>> CreateOrder([FromBody] CreateOrderDto createOrderDto)
         {
             var cart = await _cartService.GetCartAsync();
             if (!cart.CartItems.Any())
@@ -64,7 +65,7 @@ namespace tai_shop.Controllers
 
             await _cartManagement.TransitionToCheckout(cart.Id);
 
-            var createdOrder = await _orderRepository.AddOrderAsync(cart);
+            var createdOrder = await _orderRepository.AddOrderAsync(cart, createOrderDto.Address, createOrderDto.ShippingMethod);
 
             await _cartManagement.CompleteCart(cart.Id);
 

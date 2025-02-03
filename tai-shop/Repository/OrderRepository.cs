@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using tai_shop.Data;
+using tai_shop.Dtos;
+using tai_shop.Enums;
 using tai_shop.Interfaces;
 using tai_shop.Models;
 
@@ -40,11 +42,56 @@ namespace tai_shop.Repository
                 .ToListAsync();
         }
 
-        public async Task<Order> AddOrderAsync(Cart cart)
+        public async Task<Order> AddOrderAsync(Cart cart, AddressDto addressDto, ShippingMethod shippingMethod)
         {
+            var shippingAddress = new Address
+            {
+                Street = addressDto.Street,
+                City = addressDto.City,
+                PostalCode = addressDto.PostalCode,
+                Country = addressDto.Country
+            };
+
+            if (cart.UserId?.StartsWith("anon_") != true)
+            {
+                var user = await _context.Users
+                    .Include(u => u.Address)
+                    .FirstOrDefaultAsync(u => u.Id == cart.UserId);
+
+                if (user.Address == null)
+                {
+                    shippingAddress.UserId = cart.UserId;
+                    user.Address = shippingAddress;
+                    _context.Update(user);
+                }
+                else
+                {
+                    shippingAddress = new Address
+                    {
+                        Street = user.Address.Street,
+                        City = user.Address.City,
+                        PostalCode = user.Address.PostalCode,
+                        Country = user.Address.Country
+                    };
+                }
+            }
+            else
+            {
+                shippingAddress.FirstName = addressDto.FirstName;
+                shippingAddress.LastName = addressDto.LastName;
+            }
+
+            if (_context.Entry(shippingAddress).State == EntityState.Detached)
+            {
+                _context.Addresses.Add(shippingAddress);
+                await _context.SaveChangesAsync();
+            }
+
             var order = new Order
             {
                 OrderDate = DateTime.UtcNow,
+                ShippingAddressId = shippingAddress.Id,
+                ShippingMethod = shippingMethod,
                 ItemOrders = cart.CartItems.Select(ci => new ItemOrder
                 {
                     ItemId = ci.ItemId,

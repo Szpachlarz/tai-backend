@@ -32,6 +32,7 @@ namespace tai_shop.Mappers
                 Name = requestDto.Name,
                 Description = requestDto.Description,
                 Price = requestDto.Price,
+                StockQuantity = requestDto.StockQuantity
             };
         }
     }

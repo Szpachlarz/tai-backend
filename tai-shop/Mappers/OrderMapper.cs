@@ -48,27 +48,27 @@ namespace tai_shop.Mappers
             };
         }
 
-        public static Order ToEntity(this CreateOrderDto dto, string userId, IEnumerable<Item> items)
-        {
-            if (dto == null) return null;
+        //public static Order ToEntity(this CreateOrderDto dto, string userId, IEnumerable<Item> items)
+        //{
+        //    if (dto == null) return null;
 
-            var itemsDict = items.ToDictionary(i => i.Id, i => i.Price);
+        //    var itemsDict = items.ToDictionary(i => i.Id, i => i.Price);
 
-            var itemOrders = dto.Items?.Select(item => new ItemOrder
-            {
-                ItemId = item.ItemId,
-                Quantity = item.Quantity,
-                Price = itemsDict.GetValueOrDefault(item.ItemId)
-            }).ToList() ?? new List<ItemOrder>();
+        //    var itemOrders = dto.Items?.Select(item => new ItemOrder
+        //    {
+        //        ItemId = item.ItemId,
+        //        Quantity = item.Quantity,
+        //        Price = itemsDict.GetValueOrDefault(item.ItemId)
+        //    }).ToList() ?? new List<ItemOrder>();
 
-            return new Order
-            {
-                UserId = userId,
-                OrderDate = DateTime.UtcNow,
-                Status = OrderStatus.Pending,
-                ShippingMethod = dto.ShippingMethod,
-                ItemOrders = itemOrders
-            };
-        }
+        //    return new Order
+        //    {
+        //        UserId = userId,
+        //        OrderDate = DateTime.UtcNow,
+        //        Status = OrderStatus.Pending,
+        //        ShippingMethod = dto.ShippingMethod,
+        //        ItemOrders = itemOrders
+        //    };
+        //}
     }
 }

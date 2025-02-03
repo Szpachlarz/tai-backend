@@ -10,6 +10,8 @@ namespace tai_shop.Models
         public string? UserId { get; set; }
         public AppUser? User { get; set; }
         public string? AnonymousUserId { get; set; }
+        public int ShippingAddressId { get; set; }
+        public Address ShippingAddress { get; set; }
         public DateTime OrderDate { get; set; }
         public OrderStatus Status { get; set; }
         public ShippingMethod ShippingMethod { get; set; }

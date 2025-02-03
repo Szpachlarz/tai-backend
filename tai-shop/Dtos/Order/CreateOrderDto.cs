@@ -4,7 +4,7 @@ namespace tai_shop.Dtos.Order
 {
     public class CreateOrderDto
     {
-        public List<CreateOrderItemDto> Items { get; set; } = new List<CreateOrderItemDto>();
+        public AddressDto Address { get; set; }
         public ShippingMethod ShippingMethod { get; set; }
     }
 }

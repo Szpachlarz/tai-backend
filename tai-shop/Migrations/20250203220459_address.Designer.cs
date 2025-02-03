@@ -12,8 +12,8 @@ using tai_shop.Data;
 namespace tai_shop.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250202005904_init")]
-    partial class init
+    [Migration("20250203220459_address")]
+    partial class address
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,13 +54,15 @@ namespace tai_shop.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "69fb5617-62ec-47f7-b624-cf07a36b4ade",
+                            Id = "2e22a796-da69-4d98-a623-9b1bb6ab90a2",
+                            ConcurrencyStamp = "11b1a4ad-cd28-41ed-8e98-4528460ee6a2",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "cc5dc002-8e12-4b57-8da0-432d1f3b32dd",
+                            Id = "99f01437-fb6d-4a13-ab48-8184fd5ccf62",
+                            ConcurrencyStamp = "d812ac8e-44c4-40c4-bdea-a0399dc8c1c9",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -172,12 +174,57 @@ namespace tai_shop.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("tai_shop.Models.Address", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("Addresses");
+                });
+
             modelBuilder.Entity("tai_shop.Models.AppUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AddressId")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -426,8 +473,14 @@ namespace tai_shop.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AnonymousUserId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("ShippingAddressId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ShippingMethod")
                         .IsRequired()
@@ -438,10 +491,11 @@ namespace tai_shop.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ShippingAddressId");
 
                     b.HasIndex("UserId");
 
@@ -598,10 +652,19 @@ namespace tai_shop.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("tai_shop.Models.Address", b =>
+                {
+                    b.HasOne("tai_shop.Models.AppUser", "User")
+                        .WithOne("Address")
+                        .HasForeignKey("tai_shop.Models.Address", "UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("tai_shop.Models.CartItem", b =>
                 {
                     b.HasOne("tai_shop.Models.Cart", "Cart")
-                        .WithMany("Items")
+                        .WithMany("CartItems")
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -676,11 +739,17 @@ namespace tai_shop.Migrations
 
             modelBuilder.Entity("tai_shop.Models.Order", b =>
                 {
-                    b.HasOne("tai_shop.Models.AppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                    b.HasOne("tai_shop.Models.Address", "ShippingAddress")
+                        .WithMany("Orders")
+                        .HasForeignKey("ShippingAddressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("tai_shop.Models.AppUser", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("ShippingAddress");
 
                     b.Navigation("User");
                 });
@@ -726,9 +795,21 @@ namespace tai_shop.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("tai_shop.Models.Address", b =>
+                {
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("tai_shop.Models.AppUser", b =>
+                {
+                    b.Navigation("Address");
+
+                    b.Navigation("Orders");
+                });
+
             modelBuilder.Entity("tai_shop.Models.Cart", b =>
                 {
-                    b.Navigation("Items");
+                    b.Navigation("CartItems");
                 });
 
             modelBuilder.Entity("tai_shop.Models.Item", b =>

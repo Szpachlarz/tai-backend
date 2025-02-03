@@ -25,6 +25,7 @@ namespace tai_shop.Data
         public DbSet<Photo> Photos { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Address> Addresses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -45,6 +46,11 @@ namespace tai_shop.Data
                 .WithMany(ba => ba.ItemTags)
                 .HasForeignKey(bi => bi.TagId);
 
+            builder.Entity<AppUser>()
+                .HasOne(u => u.Address)
+                .WithOne(a => a.User)
+                .HasForeignKey<Address>(a => a.UserId);
+
             builder.Entity<Order>()
                 .Property(o => o.Status)
                 .HasConversion<string>();
@@ -61,13 +67,17 @@ namespace tai_shop.Data
             {
                 new IdentityRole
                 {
+                    Id = Guid.NewGuid().ToString(),
                     Name = "Admin",
-                    NormalizedName = "ADMIN"
+                    NormalizedName = "ADMIN",
+                    ConcurrencyStamp = Guid.NewGuid().ToString()
                 },
                 new IdentityRole
                 {
+                    Id = Guid.NewGuid().ToString(),
                     Name = "User",
-                    NormalizedName = "USER"
+                    NormalizedName = "USER",
+                    ConcurrencyStamp = Guid.NewGuid().ToString()
                 },
             };
             builder.Entity<IdentityRole>().HasData(roles);
