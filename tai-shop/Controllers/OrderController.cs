@@ -56,6 +56,15 @@ namespace tai_shop.Controllers
             return Ok(orderDtos);
         }
 
+        [HttpGet("my-orders")]
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetMyOrders()
+        {
+            var myId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var orders = await _orderRepository.GetOrdersByCustomerIdAsync(myId);
+            var orderDtos = orders.Select(o => o.ToDto());
+            return Ok(orderDtos);
+        }
+
         [HttpPost]
         public async Task<ActionResult<OrderDto>> CreateOrder([FromBody] CreateOrderDto createOrderDto)
         {
