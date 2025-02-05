@@ -1,0 +1,75 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using tai_shop.Dtos.Return;
+using tai_shop.Exceptions;
+using tai_shop.Interfaces;
+using tai_shop.Models;
+
+namespace tai_shop.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ReturnController : ControllerBase
+    {
+        private readonly IReturnRepository _returnRepository;
+
+        public ReturnController(IReturnRepository returnRepository)
+        {
+            _returnRepository = returnRepository;
+        }
+
+        [HttpPost]
+        //[Authorize]
+        public async Task<ActionResult<Return>> CreateReturnRequest([FromBody] CreateReturnDto returnRequest)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var createdReturn = await _returnRepository.CreateReturnRequest(returnRequest, userId);
+            return CreatedAtAction(nameof(GetReturnRequest), new { id = createdReturn.Id }, createdReturn);
+        }
+
+        [HttpGet("{id}")]
+        //[Authorize]
+        public async Task<ActionResult<Return>> GetReturnRequest(int id)
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var isAdmin = User.IsInRole("Admin");
+
+                var returnRequest = await _returnRepository.GetReturnRequest(id, userId);
+                return Ok(returnRequest);
+            }
+            catch (NotFoundException)
+            {
+                return NotFound(new { message = "Return request not found" });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPut("{id}/approve")]
+        //[Authorize]
+        public async Task<ActionResult<Return>> ApproveReturn(int id)
+        {
+            var approvedReturn = await _returnRepository.ApproveReturn(id);
+            return Ok(approvedReturn);
+        }
+
+        [HttpPut("{id}/reject")]
+        //[Authorize]
+        public async Task<ActionResult<Return>> RejectReturn(int id, [FromBody] string reason)
+        {
+            var rejectedReturn = await _returnRepository.RejectReturn(id, reason);
+            return Ok(rejectedReturn);
+        }
+    }
+}

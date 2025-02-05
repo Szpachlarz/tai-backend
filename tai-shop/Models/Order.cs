@@ -17,6 +17,8 @@ namespace tai_shop.Models
         public ShippingMethod ShippingMethod { get; set; }
         //Items
         public List<ItemOrder> ItemOrders { get; set; }
+        //Returns
+        public List<Return> Returns { get; set; }
         public decimal TotalAmount =>
         ItemOrders?.Sum(io => io.Quantity * io.Price) ?? 0;
     }

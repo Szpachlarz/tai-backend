@@ -12,8 +12,8 @@ using tai_shop.Data;
 namespace tai_shop.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250203220459_address")]
-    partial class address
+    [Migration("20250205220846_returns-update")]
+    partial class returnsupdate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,22 +50,6 @@ namespace tai_shop.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "2e22a796-da69-4d98-a623-9b1bb6ab90a2",
-                            ConcurrencyStamp = "11b1a4ad-cd28-41ed-8e98-4528460ee6a2",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "99f01437-fb6d-4a13-ab48-8184fd5ccf62",
-                            ConcurrencyStamp = "d812ac8e-44c4-40c4-bdea-a0399dc8c1c9",
-                            Name = "User",
-                            NormalizedName = "USER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -421,11 +405,11 @@ namespace tai_shop.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ItemId")
+                    b.Property<int?>("ItemId")
                         .HasColumnType("int");
 
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
+                    b.Property<int>("ItemOrderId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -436,6 +420,8 @@ namespace tai_shop.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ItemId");
+
+                    b.HasIndex("ItemOrderId");
 
                     b.HasIndex("ReturnId");
 
@@ -539,13 +525,33 @@ namespace tai_shop.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("CustomerNotes")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ProcessedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("RefundAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("ReturnRequestDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("OrderId");
 
                     b.ToTable("Returns");
                 });
@@ -701,10 +707,14 @@ namespace tai_shop.Migrations
 
             modelBuilder.Entity("tai_shop.Models.ItemReturn", b =>
                 {
-                    b.HasOne("tai_shop.Models.Item", "Item")
+                    b.HasOne("tai_shop.Models.Item", null)
                         .WithMany("ItemReturns")
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("ItemId");
+
+                    b.HasOne("tai_shop.Models.ItemOrder", "ItemOrder")
+                        .WithMany()
+                        .HasForeignKey("ItemOrderId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("tai_shop.Models.Return", "Return")
@@ -713,7 +723,7 @@ namespace tai_shop.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Item");
+                    b.Navigation("ItemOrder");
 
                     b.Navigation("Return");
                 });
@@ -767,13 +777,13 @@ namespace tai_shop.Migrations
 
             modelBuilder.Entity("tai_shop.Models.Return", b =>
                 {
-                    b.HasOne("tai_shop.Models.AppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("tai_shop.Models.Order", "Order")
+                        .WithMany("Returns")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("tai_shop.Models.Review", b =>
@@ -828,6 +838,8 @@ namespace tai_shop.Migrations
             modelBuilder.Entity("tai_shop.Models.Order", b =>
                 {
                     b.Navigation("ItemOrders");
+
+                    b.Navigation("Returns");
                 });
 
             modelBuilder.Entity("tai_shop.Models.Return", b =>

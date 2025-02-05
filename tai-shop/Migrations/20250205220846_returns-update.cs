@@ -3,12 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace tai_shop.Migrations
 {
     /// <inheritdoc />
-    public partial class address : Migration
+    public partial class returnsupdate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -232,25 +230,6 @@ namespace tai_shop.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Returns",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Returns", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Returns_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "CartItems",
                 columns: table => new
                 {
@@ -386,34 +365,6 @@ namespace tai_shop.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItemReturns",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<double>(type: "float", nullable: false),
-                    ReturnId = table.Column<int>(type: "int", nullable: false),
-                    ItemId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemReturns", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ItemReturns_Items_ItemId",
-                        column: x => x.ItemId,
-                        principalTable: "Items",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ItemReturns_Returns_ReturnId",
-                        column: x => x.ReturnId,
-                        principalTable: "Returns",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ItemOrders",
                 columns: table => new
                 {
@@ -442,13 +393,62 @@ namespace tai_shop.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[,]
+            migrationBuilder.CreateTable(
+                name: "Returns",
+                columns: table => new
                 {
-                    { "2e22a796-da69-4d98-a623-9b1bb6ab90a2", "11b1a4ad-cd28-41ed-8e98-4528460ee6a2", "Admin", "ADMIN" },
-                    { "99f01437-fb6d-4a13-ab48-8184fd5ccf62", "d812ac8e-44c4-40c4-bdea-a0399dc8c1c9", "User", "USER" }
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    ReturnRequestDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProcessedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerNotes = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RefundAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Returns", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Returns_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItemReturns",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    ReturnId = table.Column<int>(type: "int", nullable: false),
+                    ItemOrderId = table.Column<int>(type: "int", nullable: false),
+                    ItemId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemReturns", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ItemReturns_ItemOrders_ItemOrderId",
+                        column: x => x.ItemOrderId,
+                        principalTable: "ItemOrders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ItemReturns_Items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Items",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ItemReturns_Returns_ReturnId",
+                        column: x => x.ReturnId,
+                        principalTable: "Returns",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -523,6 +523,11 @@ namespace tai_shop.Migrations
                 column: "ItemId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ItemReturns_ItemOrderId",
+                table: "ItemReturns",
+                column: "ItemOrderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ItemReturns_ReturnId",
                 table: "ItemReturns",
                 column: "ReturnId");
@@ -553,9 +558,9 @@ namespace tai_shop.Migrations
                 column: "ItemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Returns_UserId",
+                name: "IX_Returns_OrderId",
                 table: "Returns",
-                column: "UserId");
+                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_ItemId",
@@ -590,9 +595,6 @@ namespace tai_shop.Migrations
                 name: "CartItems");
 
             migrationBuilder.DropTable(
-                name: "ItemOrders");
-
-            migrationBuilder.DropTable(
                 name: "ItemReturns");
 
             migrationBuilder.DropTable(
@@ -611,7 +613,7 @@ namespace tai_shop.Migrations
                 name: "Carts");
 
             migrationBuilder.DropTable(
-                name: "Orders");
+                name: "ItemOrders");
 
             migrationBuilder.DropTable(
                 name: "Returns");
@@ -621,6 +623,9 @@ namespace tai_shop.Migrations
 
             migrationBuilder.DropTable(
                 name: "Items");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "Addresses");

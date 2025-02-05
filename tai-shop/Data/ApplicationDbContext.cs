@@ -51,6 +51,24 @@ namespace tai_shop.Data
                 .WithOne(a => a.User)
                 .HasForeignKey<Address>(a => a.UserId);
 
+            builder.Entity<Return>()
+                .HasOne(r => r.Order)
+                .WithMany(o => o.Returns)
+                .HasForeignKey(r => r.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<ItemReturn>()
+                .HasOne(ir => ir.ItemOrder)
+                .WithMany()
+                .HasForeignKey(ir => ir.ItemOrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<ItemReturn>()
+                .HasOne(ri => ri.Return)
+                .WithMany(r => r.ItemReturns)
+                .HasForeignKey(ri => ri.ReturnId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.Entity<Order>()
                 .Property(o => o.Status)
                 .HasConversion<string>();
@@ -63,24 +81,9 @@ namespace tai_shop.Data
                 .Property(o => o.Status)
                 .HasConversion<string>();
 
-            List<IdentityRole> roles = new List<IdentityRole>
-            {
-                new IdentityRole
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Name = "Admin",
-                    NormalizedName = "ADMIN",
-                    ConcurrencyStamp = Guid.NewGuid().ToString()
-                },
-                new IdentityRole
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Name = "User",
-                    NormalizedName = "USER",
-                    ConcurrencyStamp = Guid.NewGuid().ToString()
-                },
-            };
-            builder.Entity<IdentityRole>().HasData(roles);
+            builder.Entity<Return>()
+                .Property(o => o.Status)
+                .HasConversion<string>();
         }
     }
 }
