@@ -68,11 +68,6 @@ namespace tai_shop.Controllers
 
             var reviews = await _reviewRepository.GetProductReviewsAsync(itemId);
 
-            if (!reviews.Any())
-            {
-                return NotFound("No reviews found for this item.");
-            }
-
             return Ok(reviews.ToDtoList());
         }
 

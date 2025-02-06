@@ -39,12 +39,12 @@ namespace tai_shop.Repository
 
         public async Task<List<Item>> GetAllAsync()
         {
-            return await _context.Items.Include(i => i.Photos).ToListAsync();
+            return await _context.Items.Include(i => i.Photos).Include(i => i.Reviews).ToListAsync();
         }
 
         public async Task<Item?> GetByIdAsync(int id)
         {
-            return await _context.Items.Include(i => i.Photos).FirstOrDefaultAsync(i => i.Id == id);
+            return await _context.Items.Include(i => i.Photos).Include(i => i.Reviews).FirstOrDefaultAsync(i => i.Id == id);
         }
 
         public async Task<IEnumerable<Item>> GetItemsByIdsAsync(IEnumerable<int> itemIds)
