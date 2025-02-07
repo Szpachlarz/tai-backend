@@ -89,9 +89,18 @@ namespace tai_shop.Repository
 
         public async Task<IEnumerable<Item>> GetItemsByTagAsync(string tagName)
         {
-            return await _context.ItemTags
-                .Where(pt => pt.Tag.Name == tagName)
-                .Select(pt => pt.Item)
+            var tag = await _context.Tags
+                .FirstOrDefaultAsync(t => t.Name.ToLower() == tagName.ToLower());
+
+            if (tag == null)
+                return Enumerable.Empty<Item>();
+
+            return await _context.Items
+                .Include(i => i.Photos)
+                .Include(i => i.Reviews)
+                .Include(i => i.ItemTags)
+                    .ThenInclude(it => it.Tag)
+                .Where(i => i.ItemTags.Any(it => it.TagId == tag.Id))
                 .ToListAsync();
         }
 

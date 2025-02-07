@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using tai_shop.Dtos;
 using tai_shop.Interfaces;
+using tai_shop.Mappers;
 using tai_shop.Models;
 
 namespace tai_shop.Controllers
@@ -89,7 +90,10 @@ namespace tai_shop.Controllers
         public async Task<ActionResult<IEnumerable<Item>>> GetItemsByTag(string tagName)
         {
             var items = await _tagRepository.GetItemsByTagAsync(tagName);
-            return Ok(items);
+
+            var itemsDto = items.Select(s => s.ToItemDto()).ToList();
+
+            return Ok(itemsDto);
         }
     }
 }
