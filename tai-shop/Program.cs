@@ -118,7 +118,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<CartManagementService>();
 builder.Services.AddScoped<CartCleanupService>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
@@ -127,6 +127,7 @@ builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

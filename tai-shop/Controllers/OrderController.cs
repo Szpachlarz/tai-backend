@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using tai_shop.Dtos;
 using tai_shop.Dtos.Order;
+using tai_shop.Dtos.Payment;
 using tai_shop.Enums;
 using tai_shop.Interfaces;
 using tai_shop.Mappers;
@@ -17,10 +17,10 @@ namespace tai_shop.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly ICartService _cartService;
+        private readonly ICartRepository _cartService;
         private readonly CartManagementService _cartManagement;
 
-        public OrderController(IOrderRepository orderRepository, ICartService cartService, CartManagementService cartManagement)
+        public OrderController(IOrderRepository orderRepository, ICartRepository cartService, CartManagementService cartManagement)
         {
             _orderRepository = orderRepository;
             _cartService = cartService;
@@ -162,14 +162,46 @@ namespace tai_shop.Controllers
             return Ok(filteredOrders.Select(o => o.ToDto()));
         }
 
+        [HttpPost("{orderId}/payment")]
+        public async Task<ActionResult<Payment>> ProcessPayment(int orderId, [FromBody] CreatePaymentDto paymentDto)
+        {
+            try
+            {
+                var payment = await _orderRepository.ProcessOrderPaymentAsync(
+                    orderId,
+                    paymentDto
+                );
+                return Ok(payment);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An error occurred while processing the payment" });
+            }
+        }
+
         private bool IsValidStatusTransition(OrderStatus currentStatus, OrderStatus newStatus)
         {
             return (currentStatus, newStatus) switch
             {
-                (OrderStatus.Pending, OrderStatus.Processing) => true,
+                (OrderStatus.Created, OrderStatus.PaymentPending) => true,
+                (OrderStatus.PaymentPending, OrderStatus.PaymentProcessing) => true,
+                (OrderStatus.PaymentProcessing, OrderStatus.Paid) => true,
+                (OrderStatus.PaymentProcessing, OrderStatus.PaymentFailed) => true,
+                (OrderStatus.Paid, OrderStatus.Processing) => true,
                 (OrderStatus.Processing, OrderStatus.Shipped) => true,
                 (OrderStatus.Shipped, OrderStatus.Delivered) => true,
-                (_, OrderStatus.Cancelled) => true,
+                (OrderStatus.Paid, OrderStatus.Refunded) => true,
+                (OrderStatus.Processing, OrderStatus.Refunded) => true,
+                (OrderStatus.Created, OrderStatus.Cancelled) => true,
+                (OrderStatus.PaymentPending, OrderStatus.Cancelled) => true,
+                (OrderStatus.PaymentProcessing, OrderStatus.Cancelled) => true,
+                (OrderStatus.Paid, OrderStatus.Cancelled) => true,
+                (OrderStatus.Processing, OrderStatus.Cancelled) => true,
+                (OrderStatus.Shipped, OrderStatus.Cancelled) => true,
                 _ => false
             };
         }

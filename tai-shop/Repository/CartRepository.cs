@@ -6,14 +6,14 @@ using tai_shop.Exceptions;
 using tai_shop.Interfaces;
 using tai_shop.Models;
 
-namespace tai_shop.Services
+namespace tai_shop.Repository
 {
-    public class CartService : ICartService
+    public class CartRepository : ICartRepository
     {
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CartService(
+        public CartRepository(
             ApplicationDbContext context,
             IHttpContextAccessor httpContextAccessor)
         {

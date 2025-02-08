@@ -11,12 +11,12 @@ namespace tai_shop.Repository
     public class ReturnRepository : IReturnRepository
     {
         private readonly ApplicationDbContext _context;
-        //private readonly IPaymentService _paymentService;
+        private readonly IPaymentRepository _paymentRepository;
 
-        public ReturnRepository(ApplicationDbContext context/*, IPaymentService paymentService*/)
+        public ReturnRepository(ApplicationDbContext context, IPaymentRepository paymentRepository)
         {
             _context = context;
-            //_paymentService = paymentService;
+            _paymentRepository = paymentRepository;
         }
 
         public async Task<Return> CreateReturnRequest(CreateReturnDto returnDto, string userId)
@@ -164,7 +164,7 @@ namespace tai_shop.Repository
             if (returnRequest.Status != ReturnStatus.Processed)
                 throw new InvalidOperationException("Return must be processed before refunding");
 
-            //var refundResult = await _paymentService.RefundPayment(returnRequest.OrderId, returnRequest.RefundAmount);
+            var refundResult = await _paymentRepository.RefundPayment(returnRequest.OrderId);
 
             returnRequest.Status = ReturnStatus.Refunded;
             await _context.SaveChangesAsync();

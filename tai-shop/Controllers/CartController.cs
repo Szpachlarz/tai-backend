@@ -14,9 +14,9 @@ namespace tai_shop.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-        private readonly ICartService _cartService;
+        private readonly ICartRepository _cartService;
 
-        public CartController(ICartService cartService)
+        public CartController(ICartRepository cartService)
         {
             _cartService = cartService;
         }

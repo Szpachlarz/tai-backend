@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
+using tai_shop.Enums;
 using tai_shop.Models;
 
 namespace tai_shop.Data
@@ -26,6 +27,7 @@ namespace tai_shop.Data
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Address> Addresses { get; set; }
+        public DbSet<Payment> Payments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -68,6 +70,15 @@ namespace tai_shop.Data
                 .WithMany(r => r.ItemReturns)
                 .HasForeignKey(ri => ri.ReturnId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Order>()
+            .HasOne(o => o.Payment)
+            .WithOne(p => p.Order)
+            .HasForeignKey<Payment>(p => p.OrderId);
+
+            builder.Entity<Order>()
+                .Property(o => o.PaymentStatus)
+                .HasDefaultValue(PaymentStatus.Pending);
 
             builder.Entity<Order>()
                 .Property(o => o.Status)

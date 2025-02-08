@@ -2,7 +2,7 @@
 
 namespace tai_shop.Interfaces
 {
-    public interface ICartService
+    public interface ICartRepository
     {
         Task<Cart> GetCartAsync();
         Task AddItemAsync(int itemId, int quantity);
