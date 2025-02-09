@@ -15,6 +15,7 @@ namespace tai_shop.Mappers
                 Description = itemModel.Description,
                 Price = itemModel.Price,
                 Rating = itemModel.AverageRating,
+                Tags = itemModel.ItemTags?.Select(t => t.Tag.Name).ToList(),
                 Photos = itemModel.Photos?.Select(p => new PhotoDto
                 {
                     Id = p.Id,

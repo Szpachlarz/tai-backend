@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using tai_shop.Data;
+using tai_shop.Dtos;
 using tai_shop.Dtos.Item;
 using tai_shop.Interfaces;
 using tai_shop.Models;
@@ -91,6 +93,78 @@ namespace tai_shop.Repository
         public async Task<bool> ItemExistsAsync(int itemId)
         {
             return await _context.Items.AnyAsync(i => i.Id == itemId);
+        }
+
+        public async Task<IEnumerable<Item>> GetFilteredItemsAsync(ItemFilter filter)
+        {
+            var query = _context.Items
+                .Include(i => i.ItemTags)
+                    .ThenInclude(it => it.Tag)
+                .Include(i => i.Reviews)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
+            {
+                var searchTerm = filter.SearchTerm.ToLower();
+                query = query.Where(i =>
+                    i.Name.ToLower().Contains(searchTerm) ||
+                    i.Description.ToLower().Contains(searchTerm));
+            }
+
+            if (filter.MinPrice.HasValue)
+            {
+                query = query.Where(i => i.Price >= filter.MinPrice.Value);
+            }
+
+            if (filter.MaxPrice.HasValue)
+            {
+                query = query.Where(i => i.Price <= filter.MaxPrice.Value);
+            }
+
+            if (filter.MinStock.HasValue)
+            {
+                query = query.Where(i => i.StockQuantity >= filter.MinStock.Value);
+            }
+
+            if (filter.MinRating.HasValue)
+            {
+                query = query.Where(i => i.Reviews.Average(r => r.Rating) >= filter.MinRating.Value);
+            }
+
+            if (filter.Tags != null && filter.Tags.Any())
+            {
+                query = query.Where(i => i.ItemTags.Any(t => filter.Tags.Contains(t.Tag.Name)));
+            }
+
+            if (filter.HasDiscount.HasValue)
+            {
+                query = query.Where(i =>
+                    filter.HasDiscount.Value ?
+                    i.OldPrice.HasValue && i.OldPrice > i.Price :
+                    !i.OldPrice.HasValue || i.OldPrice <= i.Price);
+            }
+
+            //if (!string.IsNullOrEmpty(filter.SortBy))
+            //{
+            //    query = filter.SortBy.ToLower() switch
+            //    {
+            //        "price" => filter.SortDescending ?
+            //            query.OrderByDescending(i => i.Price) :
+            //            query.OrderBy(i => i.Price),
+            //        "name" => filter.SortDescending ?
+            //            query.OrderByDescending(i => i.Name) :
+            //            query.OrderBy(i => i.Name),
+            //        "rating" => filter.SortDescending ?
+            //            query.OrderByDescending(i => i.Reviews.Average(r => r.Rating)) :
+            //            query.OrderBy(i => i.Reviews.Average(r => r.Rating)),
+            //        "stock" => filter.SortDescending ?
+            //            query.OrderByDescending(i => i.StockQuantity) :
+            //            query.OrderBy(i => i.StockQuantity),
+            //        _ => query.OrderBy(i => i.Id)
+            //    };
+            //}
+
+            return await query.ToListAsync();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tai_shop.Data;
+using tai_shop.Dtos;
 using tai_shop.Dtos.Item;
 using tai_shop.Interfaces;
 using tai_shop.Mappers;
@@ -137,6 +138,16 @@ namespace tai_shop.Controllers
             }
 
             return Ok(item);
+        }
+
+        [HttpGet("filter")]
+        public async Task<ActionResult<IEnumerable<Item>>> GetFilteredItems([FromQuery] ItemFilter filter)
+        {
+            var items = await _itemRepository.GetFilteredItemsAsync(filter);
+
+            var itemsDto = items.Select(s => s.ToItemDto()).ToList();
+
+            return Ok(itemsDto);
         }
     }
 }

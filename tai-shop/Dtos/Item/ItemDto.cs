@@ -11,6 +11,7 @@ namespace tai_shop.Dtos.Item
         public decimal Price { get; set; }
         public double Rating { get; set; }
         public List<PhotoDto> Photos { get; set; }
-        public List<ItemTag> ItemTags { get; set; }
+        //public List<ItemTag> ItemTags { get; set; }
+        public List<string> Tags { get; set; }
     }
 }

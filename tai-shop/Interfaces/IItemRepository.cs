@@ -1,4 +1,5 @@
-﻿using tai_shop.Dtos.Item;
+﻿using tai_shop.Dtos;
+using tai_shop.Dtos.Item;
 using tai_shop.Models;
 
 namespace tai_shop.Interfaces
@@ -13,5 +14,6 @@ namespace tai_shop.Interfaces
         Task<Item?> DeleteAsync(int id);
         Task<Item?> UpdateStockQuantityAsync(int id, UpdateStockQuantityDto itemDto);
         Task<bool> ItemExistsAsync(int itemId);
+        Task<IEnumerable<Item>> GetFilteredItemsAsync(ItemFilter filter);
     }
 }
