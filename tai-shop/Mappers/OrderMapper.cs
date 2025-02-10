@@ -20,6 +20,7 @@ namespace tai_shop.Mappers
                 TotalAmount = order.TotalAmount,
                 Items = order.ItemOrders?.Select(io => new OrderItemDto
                 {
+                    Id = io.Id,
                     ItemId = io.ItemId,
                     Quantity = io.Quantity,
                     UnitPrice = io.Item.Price,
