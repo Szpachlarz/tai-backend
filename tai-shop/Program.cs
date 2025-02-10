@@ -129,6 +129,7 @@ builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IReturnRepository, ReturnRepository>();
+builder.Services.AddScoped<IComplaintRepository, ComplaintRepository>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

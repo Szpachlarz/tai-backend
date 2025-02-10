@@ -28,6 +28,7 @@ namespace tai_shop.Data
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<CustomerComplaint> Complaints { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -93,6 +94,10 @@ namespace tai_shop.Data
                 .HasConversion<string>();
 
             builder.Entity<Return>()
+                .Property(o => o.Status)
+                .HasConversion<string>();
+
+            builder.Entity<CustomerComplaint>()
                 .Property(o => o.Status)
                 .HasConversion<string>();
         }
