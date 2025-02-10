@@ -2,7 +2,6 @@
 using System;
 using tai_shop.Data;
 using tai_shop.Dtos;
-using tai_shop.Dtos.Payment;
 using tai_shop.Enums;
 using tai_shop.Interfaces;
 using tai_shop.Models;
@@ -12,12 +11,10 @@ namespace tai_shop.Repository
     public class OrderRepository : IOrderRepository
     {
         private readonly ApplicationDbContext _context;
-        private readonly IPaymentRepository _paymentRepository;
 
-        public OrderRepository(ApplicationDbContext context, IPaymentRepository paymentRepository)
+        public OrderRepository(ApplicationDbContext context)
         {
             _context = context;
-            _paymentRepository = paymentRepository;
         }
 
         public async Task<Order> GetOrderByIdAsync(int orderId)
@@ -140,76 +137,6 @@ namespace tai_shop.Repository
             }
             await _context.SaveChangesAsync();
             return order;
-        }
-
-        public async Task<PaymentResponseDto> ProcessOrderPaymentAsync(int orderId, CreatePaymentDto createPaymentDto)
-        {
-            var order = await GetOrderByIdAsync(orderId);
-            if (order == null)
-            {
-                throw new ArgumentException($"Order with ID {orderId} not found");
-            }
-
-            decimal totalAmount = order.FinalAmount;
-
-            //if (createPaymentDto.Amount != totalAmount)
-            //{
-            //    throw new ArgumentException("Payment amount does not match order total");
-            //}
-
-            var paymentDto = new PaymentDto
-            {
-                OrderId = orderId,
-                Amount = order.TotalAmount,
-                PaymentMethod = createPaymentDto.PaymentMethod,
-                CardNumber = createPaymentDto.CardNumber,
-                ExpiryDate = createPaymentDto.ExpiryDate,
-                CVV = createPaymentDto.CVV
-            };
-
-            var payment = await _paymentRepository.ProcessPayment(paymentDto);
-
-            order.PaymentStatus = payment.Status;
-            order.PaymentDate = payment.PaymentDate;
-
-            if (payment.Status == PaymentStatus.Successful)
-            {
-                order.Status = OrderStatus.Processing;
-            }
-            else
-            {
-                order.Status = OrderStatus.PaymentFailed;
-            }
-
-            await _context.SaveChangesAsync();
-
-            return new PaymentResponseDto
-            {
-                PaymentId = payment.Id,
-                OrderId = payment.OrderId,
-                Amount = payment.Amount,
-                Status = payment.Status,
-                PaymentDate = payment.PaymentDate,
-                TransactionId = payment.TransactionId,
-                FailureReason = payment.FailureReason
-            };
-        }
-
-        public async Task<Payment> RefundOrderAsync(int orderId)
-        {
-            var order = await GetOrderByIdAsync(orderId);
-            if (order == null)
-            {
-                throw new ArgumentException($"Order with ID {orderId} not found");
-            }
-
-            var payment = await _paymentRepository.RefundPayment(orderId);
-
-            order.PaymentStatus = payment.Status;
-            order.Status = OrderStatus.Refunded;
-
-            await _context.SaveChangesAsync();
-            return payment;
         }
     }
 }

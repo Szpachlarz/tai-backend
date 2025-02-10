@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using tai_shop.Dtos.Order;
-using tai_shop.Dtos.Payment;
 using tai_shop.Enums;
 using tai_shop.Interfaces;
 using tai_shop.Mappers;
@@ -160,27 +159,6 @@ namespace tai_shop.Controllers
             var orders = await _orderRepository.GetAllOrdersAsync();
             var filteredOrders = orders.Where(o => o.Status == status);
             return Ok(filteredOrders.Select(o => o.ToDto()));
-        }
-
-        [HttpPost("{orderId}/payment")]
-        public async Task<ActionResult<Payment>> ProcessPayment(int orderId, [FromBody] CreatePaymentDto paymentDto)
-        {
-            try
-            {
-                var payment = await _orderRepository.ProcessOrderPaymentAsync(
-                    orderId,
-                    paymentDto
-                );
-                return Ok(payment);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { Message = "An error occurred while processing the payment" });
-            }
         }
 
         private bool IsValidStatusTransition(OrderStatus currentStatus, OrderStatus newStatus)

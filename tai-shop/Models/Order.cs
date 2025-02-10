@@ -19,8 +19,6 @@ namespace tai_shop.Models
         public List<ItemOrder> ItemOrders { get; set; }
         //Returns
         public List<Return> Returns { get; set; }
-        public Payment? Payment { get; set; }
-        public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
         public DateTime? PaymentDate { get; set; }
         public decimal TotalAmount =>
         ItemOrders?.Sum(io => io.Quantity * io.Price) ?? 0;
