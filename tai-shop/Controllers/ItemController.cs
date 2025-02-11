@@ -61,7 +61,7 @@ namespace tai_shop.Controllers
 
             var itemModel = itemDto.ToItemFromCreateDto();
 
-            await _itemRepository.CreateAsync(itemModel);
+            await _itemRepository.CreateAsync(itemModel, itemDto.TagIds);
 
             if (files != null && files.Any())
             {

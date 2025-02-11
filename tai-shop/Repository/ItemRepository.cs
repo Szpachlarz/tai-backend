@@ -17,11 +17,32 @@ namespace tai_shop.Repository
             _context = context;
         }
 
-        public async Task<Item> CreateAsync(Item item)
+        public async Task<Item> CreateAsync(Item item, List<int> tagIds)
         {
             await _context.Items.AddAsync(item);
-
             await _context.SaveChangesAsync();
+            if (tagIds != null && tagIds.Any())
+            {
+                var existingTagIds = await _context.ItemTags
+            .Where(it => it.ItemId == item.Id)
+            .Select(it => it.TagId)
+            .ToListAsync();
+
+                var newTagIds = tagIds.Where(tagId => !existingTagIds.Contains(tagId)).ToList();
+
+                if (newTagIds.Any())
+                {
+                    var itemTags = newTagIds.Select(tagId => new ItemTag
+                    {
+                        ItemId = item.Id,
+                        TagId = tagId
+                    }).ToList();
+
+                    _context.ItemTags.AddRange(itemTags);
+                    await _context.SaveChangesAsync();
+                }
+            }
+
             return item;
         }
 
@@ -41,12 +62,22 @@ namespace tai_shop.Repository
 
         public async Task<List<Item>> GetAllAsync()
         {
-            return await _context.Items.Include(i => i.Photos).Include(i => i.Reviews).ToListAsync();
+            return await _context.Items
+                .Include(i => i.Photos)
+                .Include(i => i.Reviews)
+                .Include(i => i.ItemTags)
+                    .ThenInclude(it => it.Tag)
+                .ToListAsync();
         }
 
         public async Task<Item?> GetByIdAsync(int id)
         {
-            return await _context.Items.Include(i => i.Photos).Include(i => i.Reviews).FirstOrDefaultAsync(i => i.Id == id);
+            return await _context.Items
+                .Include(i => i.Photos)
+                .Include(i => i.Reviews)
+                .Include(i => i.ItemTags)
+                    .ThenInclude(it => it.Tag)
+                .FirstOrDefaultAsync(i => i.Id == id);
         }
 
         public async Task<IEnumerable<Item>> GetItemsByIdsAsync(IEnumerable<int> itemIds)
@@ -58,7 +89,9 @@ namespace tai_shop.Repository
 
         public async Task<Item?> UpdateAsync(int id, UpdateItemDto itemDto)
         {
-            var existingItem = await _context.Items.FirstOrDefaultAsync(x => x.Id == id);
+            var existingItem = await _context.Items
+                .Include(i => i.ItemTags)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (existingItem == null)
             {
@@ -68,6 +101,28 @@ namespace tai_shop.Repository
             existingItem.Name = itemDto.Name;
             existingItem.Description = itemDto.Description;
             existingItem.Price = itemDto.Price;
+
+            _context.ItemTags.RemoveRange(existingItem.ItemTags);
+
+            if (itemDto.TagIds != null && itemDto.TagIds.Any())
+            {
+                var existingTagIds = existingItem.ItemTags.Select(it => it.TagId).ToList();
+
+                var newTagIds = itemDto.TagIds
+                    .Where(tagId => !existingTagIds.Contains(tagId))
+                    .ToList();
+
+                if (newTagIds.Any())
+                {
+                    var itemTags = newTagIds.Select(tagId => new ItemTag
+                    {
+                        ItemId = existingItem.Id,
+                        TagId = tagId
+                    }).ToList();
+
+                    _context.ItemTags.AddRange(itemTags);
+                }
+            }
 
             await _context.SaveChangesAsync();
 

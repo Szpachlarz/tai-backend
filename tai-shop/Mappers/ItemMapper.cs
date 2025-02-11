@@ -15,14 +15,17 @@ namespace tai_shop.Mappers
                 Description = itemModel.Description,
                 Price = itemModel.Price,
                 Rating = itemModel.AverageRating,
-                Tags = itemModel.ItemTags?.Select(t => t.Tag.Name).ToList(),
+                Tags = itemModel.ItemTags?
+                    .Where(t => t.Tag != null)
+                    .Select(t => t.Tag.Name)
+                    .ToList() ?? new List<string>(),
                 Photos = itemModel.Photos?.Select(p => new PhotoDto
                 {
                     Id = p.Id,
                     Filename = p.Filename,
                     Filepath = p.Filepath,
                     Length = p.Length
-                }).ToList()
+                }).ToList() ?? new List<PhotoDto>()
             };
         }
 
@@ -33,7 +36,11 @@ namespace tai_shop.Mappers
                 Name = requestDto.Name,
                 Description = requestDto.Description,
                 Price = requestDto.Price,
-                StockQuantity = requestDto.StockQuantity
+                StockQuantity = requestDto.StockQuantity,
+                ItemTags = requestDto.TagIds?.Select(tagId => new ItemTag
+                {
+                    TagId = tagId
+                }).ToList() ?? new List<ItemTag>()
             };
         }
     }
