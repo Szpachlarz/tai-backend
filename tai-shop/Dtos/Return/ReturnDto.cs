@@ -13,7 +13,7 @@ namespace tai_shop.Dtos.Return
         public string Reason { get; set; }
         public string? CustomerNotes { get; set; }
         public string? AdminNotes { get; set; }
-        public decimal TotalRefundAmount { get; set; }
+        public decimal RefundAmount { get; set; }
         public OrderDto Order { get; set; }
         public List<ReturnItemDto> ReturnItems { get; set; }
     }

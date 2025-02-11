@@ -12,7 +12,7 @@ namespace tai_shop.Models
         public DateTime? ProcessedDate { get; set; }
         public ReturnStatus Status { get; set; }
         public string Reason { get; set; }
-        public string CustomerNotes { get; set; }
+        public string? CustomerNotes { get; set; }
         public decimal RefundAmount { get; set; }
         //Items
         public List<ItemReturn> ItemReturns { get; set; }

@@ -11,5 +11,6 @@ namespace tai_shop.Models
         public Return Return { get; set; }
         public int ItemOrderId { get; set; }
         public ItemOrder ItemOrder { get; set; }
+        //public decimal Price { get; set; }
     }
 }

@@ -11,6 +11,6 @@ namespace tai_shop.Dtos.Return
         public decimal Price { get; set; }
         public string? ProductImageUrl { get; set; }
         public decimal SubTotal => Price * QuantityToReturn;
-        public ItemDto Product { get; set; }
+        //public ItemDto Product { get; set; }
     }
 }

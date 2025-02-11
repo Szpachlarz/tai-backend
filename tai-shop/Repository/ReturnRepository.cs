@@ -17,10 +17,11 @@ namespace tai_shop.Repository
             _context = context;
         }
 
-        public async Task<Return> CreateReturnRequest(CreateReturnDto returnDto, string userId)
+        public async Task<ReturnDto> CreateReturnRequest(CreateReturnDto returnDto, string userId)
         {
             var order = await _context.Orders
                 .Include(o => o.ItemOrders)
+                    .ThenInclude(io => io.Item)
                 .FirstOrDefaultAsync(o => o.Id == returnDto.OrderId && o.UserId == userId);
 
             if (order == null)
@@ -38,6 +39,7 @@ namespace tai_shop.Repository
                 return new ItemReturn
                 {
                     ItemOrderId = ri.ItemOrderId,
+                    ItemOrder = itemOrder,
                     Quantity = ri.QuantityToReturn
                 };
             }).ToList();
@@ -49,15 +51,13 @@ namespace tai_shop.Repository
                 Status = ReturnStatus.Requested,
                 ItemReturns = returnItems,
                 Reason = returnDto.Reason,
-                CustomerNotes = returnDto.CustomerNotes,
-                RefundAmount = returnItems.Sum(ri =>
-                    ri.ItemOrder.Quantity * ri.ItemOrder.Price * ri.Quantity)
+                RefundAmount = returnItems.Sum(itemReturn => itemReturn.ItemOrder.Price * itemReturn.Quantity)
             };
 
             _context.Returns.Add(returnRequest);
             await _context.SaveChangesAsync();
 
-            return returnRequest;
+            return await GetReturnRequest(returnRequest.Id, userId);
         }
 
         public async Task<ReturnDto> GetReturnRequest(int id, string userId)
@@ -83,14 +83,15 @@ namespace tai_shop.Repository
                 ProcessedDate = returnRequest.ProcessedDate,
                 Status = returnRequest.Status,
                 Reason = returnRequest.Reason,
-                CustomerNotes = returnRequest.CustomerNotes,
                 ReturnItems = returnRequest.ItemReturns.Select(ri => new ReturnItemDto
                 {
                     ItemOrderId = ri.ItemOrderId,
                     QuantityToReturn = ri.Quantity,
                     ItemName = ri.ItemOrder.Item.Name,
-                    Price = ri.ItemOrder.Price
-                }).ToList()
+                    Price = ri.ItemOrder.Price,
+                    //ProductImageUrl = ri.ItemOrder.Item.ImageUrl
+                }).ToList(),
+                RefundAmount = returnRequest.RefundAmount,
             };
         }
 
@@ -166,6 +167,6 @@ namespace tai_shop.Repository
             await _context.SaveChangesAsync();
 
             return returnRequest.RefundAmount;
-        }
+        }        
     }
 }
