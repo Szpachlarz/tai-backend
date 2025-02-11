@@ -22,10 +22,20 @@ namespace tai_shop.Repository
             var order = await _context.Orders
                 .Include(o => o.ItemOrders)
                     .ThenInclude(io => io.Item)
+                .Include(o => o.Returns)
+                    .ThenInclude(r => r.ItemReturns)
                 .FirstOrDefaultAsync(o => o.Id == returnDto.OrderId && o.UserId == userId);
 
             if (order == null)
                 throw new ArgumentException("Order not found or not authorized");
+
+            var existingItemReturns = order.Returns
+                .SelectMany(r => r.ItemReturns)
+                .Where(ir => returnDto.ReturnItems.Any(ri => ri.ItemOrderId == ir.ItemOrderId))
+                .ToList();
+
+            if (existingItemReturns.Any())
+                throw new ArgumentException("A return request has already been created for some of the selected items.");
 
             var returnItems = returnDto.ReturnItems.Select(ri =>
             {
