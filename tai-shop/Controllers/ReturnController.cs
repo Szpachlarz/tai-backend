@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using tai_shop.Dtos.Order;
 using tai_shop.Dtos.Return;
 using tai_shop.Exceptions;
 using tai_shop.Interfaces;
+using tai_shop.Mappers;
 using tai_shop.Models;
+using tai_shop.Repository;
 
 namespace tai_shop.Controllers
 {
@@ -19,6 +22,15 @@ namespace tai_shop.Controllers
         public ReturnController(IReturnRepository returnRepository)
         {
             _returnRepository = returnRepository;
+        }
+
+        [HttpGet]
+        //[Authorize(Policy = "AdminOnly")]
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetAllReturns()
+        {
+            var returns = await _returnRepository.GetAllReturnsAsync();
+            var returnDtos = returns.Select(r => r.ToDto()).ToList();
+            return Ok(returnDtos);
         }
 
         [HttpPost]

@@ -17,6 +17,13 @@ namespace tai_shop.Repository
             _context = context;
         }
 
+        public async Task<IEnumerable<Return>> GetAllReturnsAsync()
+        {
+            return await _context.Returns
+                .Include(o => o.ItemReturns)
+                .ToListAsync();
+        }
+
         public async Task<ReturnDto> CreateReturnRequest(CreateReturnDto returnDto, string userId)
         {
             var order = await _context.Orders
