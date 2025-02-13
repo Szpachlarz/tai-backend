@@ -32,6 +32,22 @@ namespace tai_shop.Controllers
             var returnDtos = returns.Select(r => r.ToDto()).ToList();
             return Ok(returnDtos);
         }
+        
+        [HttpGet("my-returns")]
+        //[Authorize]
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetMyReturns()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var returns = await _returnRepository.GetMyReturnsAsync(userId);
+            var returnDtos = returns.Select(r => r.ToDto()).ToList();
+            return Ok(returnDtos);
+        }
 
         [HttpPost]
         //[Authorize]
