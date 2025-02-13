@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using tai_shop.Data;
 using tai_shop.Dtos;
 using tai_shop.Dtos.Item;
@@ -54,6 +55,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Create([FromForm] CreateItemDto itemDto, [FromForm] IEnumerable<IFormFile> files)
         {
             if (!ModelState.IsValid)
@@ -74,6 +76,7 @@ namespace tai_shop.Controllers
 
         [HttpDelete]
         [Route("{id:int}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             if (!ModelState.IsValid)
@@ -91,6 +94,7 @@ namespace tai_shop.Controllers
 
         [HttpPut]
         [Route("{id:int}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromForm] UpdateItemDto updateDto, [FromForm] IEnumerable<IFormFile> photos, [FromForm] List<int> photosToDelete)
         {
             if (!ModelState.IsValid)
@@ -126,6 +130,7 @@ namespace tai_shop.Controllers
 
         [HttpPatch]
         [Route("{id:int}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> UpdateStockQuantity([FromRoute]int id, [FromBody] UpdateStockQuantityDto updateStockDto)
         {
             if (!ModelState.IsValid)

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using tai_shop.Dtos.Complaint;
 using tai_shop.Enums;
@@ -21,6 +22,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<IEnumerable<ComplaintDto>>> GetComplaints([FromQuery] ComplaintStatus? status)
         {
             try
@@ -44,6 +46,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpGet("open")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<IEnumerable<ComplaintDto>>> GetOpenComplaints()
         {
             try
@@ -58,6 +61,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpGet("open/count")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<int>> GetOpenComplaintsCount()
         {
             try
@@ -144,6 +148,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpPatch("{id}/status")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<ComplaintDto>> UpdateComplaintStatus(int id, ComplaintStatus status)
         {
             try
@@ -165,6 +170,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteComplaint(int id)
         {
             try

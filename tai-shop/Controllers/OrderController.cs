@@ -27,7 +27,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetAllOrders()
         {
             var orders = await _orderRepository.GetAllOrdersAsync();
@@ -35,7 +35,7 @@ namespace tai_shop.Controllers
             return Ok(orderDtos);
         }
 
-        //[Authorize(Policy = "AdminOrSelf")]
+        [Authorize(Policy = "AdminOrSelf")]
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderDto>> GetOrder(int id)
         {
@@ -47,6 +47,7 @@ namespace tai_shop.Controllers
             return Ok(order.ToDto());
         }
 
+        [Authorize(Policy = "AdminOrSelf")]
         [HttpGet("customer/{customerId}")]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetCustomerOrders(string customerId)
         {
@@ -55,6 +56,7 @@ namespace tai_shop.Controllers
             return Ok(orderDtos);
         }
 
+        [Authorize(Policy = "AdminOrSelf")]
         [HttpGet("my-orders")]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetMyOrders()
         {
@@ -86,7 +88,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<OrderDto>> DeleteOrder(int id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -112,8 +114,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpPatch("{id}/status")]
-        //[Authorize(Policy = "AdminOnly")]
-        [Authorize]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<OrderDto>> UpdateOrderStatus(int id, OrderStatus status)
         {
             var existingOrder = await _orderRepository.GetOrderByIdAsync(id);
@@ -133,7 +134,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpPatch("{id}/shipping-method")]
-        //[Authorize(Policy = "AdminOrSelf")]
+        [Authorize(Policy = "AdminOrSelf")]
         public async Task<ActionResult<OrderDto>> UpdateShippingMethod(int id, ShippingMethod shippingMethod)
         {
             var existingOrder = await _orderRepository.GetOrderByIdAsync(id);
@@ -153,7 +154,7 @@ namespace tai_shop.Controllers
         }        
 
         [HttpGet("by-status/{status}")]
-        //[Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrdersByStatus(OrderStatus status)
         {
             var orders = await _orderRepository.GetAllOrdersAsync();

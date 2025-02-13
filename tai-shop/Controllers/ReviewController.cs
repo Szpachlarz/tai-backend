@@ -26,6 +26,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> GetAll()
         {
             if (!ModelState.IsValid)

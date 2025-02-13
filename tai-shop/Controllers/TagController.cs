@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using tai_shop.Dtos;
 using tai_shop.Interfaces;
@@ -19,6 +20,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<IEnumerable<Tag>>> GetAllTags()
         {
             var tags = await _tagRepository.GetAllTagsAsync();
@@ -26,6 +28,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Tag>> GetTag(int id)
         {
             var tag = await _tagRepository.GetTagByIdAsync(id);
@@ -37,6 +40,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Tag>> CreateTag(TagDto tagDto)
         {
             var tag = await _tagRepository.CreateTagAsync(tagDto);
@@ -44,6 +48,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Tag>> UpdateTag(int id, TagDto tagDto)
         {
             var updatedTag = await _tagRepository.UpdateTagAsync(id, tagDto);
@@ -55,6 +60,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Tag>> DeleteTag(int id)
         {
             var tag = await _tagRepository.DeleteTagAsync(id);
@@ -66,6 +72,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpPost("{tagId}/items/{itemId}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> AddTagToProduct(int tagId, int itemId)
         {
             await _tagRepository.AddTagToProductAsync(itemId, tagId);
@@ -73,6 +80,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpDelete("{tagId}/items/{itemId}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> RemoveTagFromItem(int tagId, int itemId)
         {
             await _tagRepository.RemoveTagFromItemAsync(itemId, tagId);

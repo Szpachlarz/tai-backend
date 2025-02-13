@@ -25,7 +25,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetAllReturns()
         {
             var returns = await _returnRepository.GetAllReturnsAsync();
@@ -69,7 +69,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpPut("{id}/approve")]
-        //[Authorize]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Return>> ApproveReturn(int id)
         {
             var approvedReturn = await _returnRepository.ApproveReturn(id);
@@ -77,7 +77,7 @@ namespace tai_shop.Controllers
         }
 
         [HttpPut("{id}/reject")]
-        //[Authorize]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Return>> RejectReturn(int id, [FromBody] string reason)
         {
             var rejectedReturn = await _returnRepository.RejectReturn(id, reason);
