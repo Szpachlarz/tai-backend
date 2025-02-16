@@ -117,6 +117,7 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<CartManagementService>();
@@ -129,7 +130,6 @@ builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IReturnRepository, ReturnRepository>();
 builder.Services.AddScoped<IComplaintRepository, ComplaintRepository>();
-builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
