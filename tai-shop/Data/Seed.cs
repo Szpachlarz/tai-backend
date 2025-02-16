@@ -7,20 +7,12 @@ namespace tai_shop.Data
     {
         public static async Task SeedData(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
         {
-            // Seed Roles
-            //if (!await roleManager.RoleExistsAsync("Admin"))
-            //{
-            //    await roleManager.CreateAsync(new IdentityRole("Admin"));
-            //}
-            //if (!await roleManager.RoleExistsAsync("User"))
-            //{
-            //    await roleManager.CreateAsync(new IdentityRole("User"));
-            //}
-
             // Seed Admin User
-            if (await userManager.FindByEmailAsync("admin@sklep.pl") == null)
+            var adminEmail = "admin@sklep.pl";
+            var adminUser = await userManager.FindByEmailAsync(adminEmail);
+            if (adminUser == null)
             {
-                var adminUser = new AppUser
+                adminUser = new AppUser
                 {
                     FirstName = "Admin",
                     LastName = "Admiński",
@@ -32,6 +24,14 @@ namespace tai_shop.Data
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(adminUser, "Admin");
+                    await userManager.AddToRoleAsync(adminUser, "User");
+                }
+            }
+            else
+            {
+                if (!await userManager.IsInRoleAsync(adminUser, "User"))
+                {
+                    await userManager.AddToRoleAsync(adminUser, "User");
                 }
             }
 
