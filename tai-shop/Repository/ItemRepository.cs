@@ -128,7 +128,9 @@ namespace tai_shop.Repository
 
             if (filter.MinRating.HasValue)
             {
-                query = query.Where(i => i.Reviews.Average(r => r.Rating) >= filter.MinRating.Value);
+                query = query.Where(i =>
+                    !i.Reviews.Any() && filter.MinRating.Value == 0 ||
+                    i.Reviews.Any() && i.Reviews.Average(r => r.Rating) >= filter.MinRating.Value);
             }
 
             if (filter.Tags != null && filter.Tags.Any())
