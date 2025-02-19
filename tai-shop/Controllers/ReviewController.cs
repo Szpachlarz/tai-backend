@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using tai_shop.Dtos.Review;
+using tai_shop.Exceptions;
 using tai_shop.Interfaces;
 using tai_shop.Models;
 using tai_shop.Repository;
@@ -48,7 +49,7 @@ namespace tai_shop.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(ex.Message);
+                throw new InvalidOperationException(ex.Message);
             }
         }
 
@@ -58,13 +59,13 @@ namespace tai_shop.Controllers
         {
             if (itemId <= 0)
             {
-                return BadRequest("Invalid item ID.");
+                throw new ArgumentException("Invalid item ID.");
             }
 
             var itemExists = await _itemRepository.ItemExistsAsync(itemId);
             if (!itemExists)
             {
-                return NotFound("Item not found.");
+                throw new NotFoundException("Item not found.");
             }
 
             var reviews = await _reviewRepository.GetProductReviewsAsync(itemId);

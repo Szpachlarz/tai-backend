@@ -29,11 +29,11 @@ namespace tai_shop.Controllers
 
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email.ToLower());
 
-            if (user == null) return Unauthorized("Invalid email!");
+            if (user == null) throw new UnauthorizedAccessException("Invalid username or password!");
 
             var result = await _signinManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
-            if (!result.Succeeded) return Unauthorized("Email not found and/or password incorrect");
+            if (!result.Succeeded) throw new UnauthorizedAccessException("Email not found and/or password incorrect");
 
             var roles = await _userManager.GetRolesAsync(user);
 

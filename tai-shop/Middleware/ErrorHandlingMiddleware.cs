@@ -42,6 +42,9 @@ namespace tai_shop.Middleware
                 case InvalidOperationException:
                     response.StatusCode = StatusCodes.Status400BadRequest;
                     break;
+                case UnauthorizedAccessException:
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    break;
                 default:
                     _logger.LogError(ex, "An unexpected error occurred");
                     response.StatusCode = StatusCodes.Status500InternalServerError;

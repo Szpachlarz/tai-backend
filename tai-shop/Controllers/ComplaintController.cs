@@ -41,7 +41,7 @@ namespace tai_shop.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while retrieving complaints");
+                throw new ApplicationException("An error occurred while retrieving complaints");
             }
         }
 
@@ -56,7 +56,7 @@ namespace tai_shop.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while retrieving open complaints");
+                throw new ApplicationException("An error occurred while retrieving open complaints");
             }
         }
 
@@ -70,7 +70,7 @@ namespace tai_shop.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while retrieving open complaints count");
+                throw new ApplicationException("An error occurred while retrieving open complaints count");
             }
         }
 
@@ -89,7 +89,7 @@ namespace tai_shop.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while retrieving the complaint");
+                throw new ApplicationException("An error occurred while retrieving the complaint");
             }
         }
 
@@ -113,7 +113,7 @@ namespace tai_shop.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while creating the complaint");
+                throw new ApplicationException("An error occurred while creating the complaint");
             }
         }
 
@@ -143,7 +143,7 @@ namespace tai_shop.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while updating the complaint");
+                throw new ApplicationException("An error occurred while updating the complaint");
             }
         }
 
@@ -165,7 +165,7 @@ namespace tai_shop.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while updating the complaint status");
+                throw new ApplicationException("An error occurred while updating the complaint status");
             }
         }
 
@@ -185,7 +185,7 @@ namespace tai_shop.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while deleting the complaint");
+                throw new ApplicationException("An error occurred while deleting the complaint");
             }
         }
     }
