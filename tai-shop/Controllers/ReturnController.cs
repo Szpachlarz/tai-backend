@@ -72,7 +72,7 @@ namespace tai_shop.Controllers
             }
             catch (NotFoundException)
             {
-                return NotFound(new { message = "Return request not found" });
+                throw new NotFoundException("Return request not found");
             }
             catch (UnauthorizedAccessException)
             {

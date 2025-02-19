@@ -125,7 +125,7 @@ namespace tai_shop.Controllers
 
             if (!IsValidStatusTransition(existingOrder.Status, status))
             {
-                return BadRequest($"Invalid status transition from {existingOrder.Status} to {status}");
+                throw new InvalidOperationException($"Invalid status transition from {existingOrder.Status} to {status}");
             }
 
             existingOrder.Status = status;
@@ -145,7 +145,7 @@ namespace tai_shop.Controllers
 
             if (existingOrder.Status >= OrderStatus.Shipped)
             {
-                return BadRequest("Cannot change shipping method after order has been shipped");
+                throw new InvalidOperationException("Cannot change shipping method after order has been shipped");
             }
 
             existingOrder.ShippingMethod = shippingMethod;
